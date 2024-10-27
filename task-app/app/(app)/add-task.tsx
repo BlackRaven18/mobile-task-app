@@ -8,7 +8,6 @@ export default function AddTaskScreen() {
 
     const [taskDescription, setTaskDescription] = useState('');
     const [message, setMessage] = useState('');
-
     const httpClient = new HttpClient();
 
     const addNewTask = (taskDescription: string) => {

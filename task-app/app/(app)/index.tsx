@@ -1,14 +1,16 @@
 import TaskCheckboxItem from "@/components/TaskCheckboxItem";
 import { useFocusEffect } from "@react-navigation/native";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import { FlatList, View } from "react-native";
 import { IconButton, MD3Colors, Portal, Snackbar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import HttpClient from "../api/HttpClient";
+import HttpClient from "@/api/HttpClient";
+import { useSession } from "@/auth/ctx";
 
 
 export default function Index() {
+  const { signOut } = useSession();
 
   const httpClient = new HttpClient();
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -53,8 +55,8 @@ export default function Index() {
           data={tasks}
           renderItem={({ item }) => (
             <TaskCheckboxItem
-              id={item.id} 
-              label={item.description} 
+              id={item.id}
+              label={item.description}
               afterDeleteCallback={afterTaskDeleteCallback}
             />
           )}
@@ -74,6 +76,18 @@ export default function Index() {
 
           />
         </Link>
+
+        <IconButton
+          icon="minus"
+          mode="contained"
+          iconColor={MD3Colors.tertiary50}
+          size={20}
+          onPress={() => {
+            signOut();
+            router.replace('/sign-in')
+          }}
+
+        />
       </View>
 
       <Portal>
