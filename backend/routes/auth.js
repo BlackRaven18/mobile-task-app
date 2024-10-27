@@ -25,4 +25,26 @@ router.post('/register', async (req, res, next) => {
     }
 });
 
+router.post('/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        const user = await User.find(username);
+        if (!user) {
+            return res.status(401).json({ error: 'Authentication failed' });
+        }
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+            return res.status(401).json({ error: 'Authentication failed' });
+        }
+        const token = jwt.sign({ userId: user._id }, 'your-secret-key', {
+            expiresIn: '1h',
+        });
+        console.log(token);
+        res.status(200).json({ token });
+    } catch (error) {
+        res.status(500).json({ error: 'Login failed' });
+    }
+});
+
 module.exports = router;

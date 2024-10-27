@@ -34,6 +34,20 @@ class User {
         })
     }
 
+    static find(username) {
+        return new Promise((resolve, reject) => {
+            const stmt = db.prepare("SELECT username, password FROM user WHERE username = ?");
+                stmt.get(username, (err, row) => {
+                    if (err) {
+                        reject(new Error(err.message));
+                    }
+                    else {
+                        resolve(new User(row.username, row.password));
+                    }
+                })
+        })
+    }
+
 }
 
 module.exports = User
