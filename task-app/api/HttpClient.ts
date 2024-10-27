@@ -3,9 +3,9 @@ import axios from "axios";
 export default class HttpClient {
 
     readonly SERVER_URL = "http://192.168.4.164:3000";
-    
+
     async getTasks(): Promise<Task[]> {
-        return axios.get(`${this.SERVER_URL}/tasks`)
+        return axios.get(`${this.SERVER_URL}/tasks`, { params: { taskListId: 1 } })
             .then((response) => {
                 return response.data
             })
@@ -16,8 +16,9 @@ export default class HttpClient {
     }
 
     async addTask(description: string): Promise<String> {
-        return axios.post(`${this.SERVER_URL}/tasks`, { description })
+        return axios.post(`${this.SERVER_URL}/tasks`, { description, taskListId: 1 })
             .then((response) => {
+                console.log(response.data);
                 return response.data;
             })
             .catch((error) => {

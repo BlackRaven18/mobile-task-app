@@ -20,18 +20,30 @@ app.get('/', (req, res) => {
 })
 
 app.get('/tasks', (req, res) => {
-	const stmt = db.prepare("SELECT * FROM task");
-	stmt.all((err, rows) => {
+
+	let taskListId = req.query.taskListId;
+
+	const stmt = db.prepare("SELECT * FROM task WHERE task_list_id = ?");
+	stmt.all(taskListId, (err, rows) => {
 		if (err) {
 			console.error(err.message);
+		}
+
+		if(rows.length == 0) {
+			res.status(404).send("No tasks found")
+			return
 		}
 		res.status(200).send(rows)
 	})
 })
 
 app.post('/tasks', (req, res) => {
-	const stmt = db.prepare("INSERT INTO task (description) VALUES (?)");
-	stmt.run(req.body.description, (err) => {
+
+	let description = req.body.description
+	let taskListId = req.body.taskListId;
+
+	const stmt = db.prepare("INSERT INTO task (description, task_list_id) VALUES (?, ?)");
+	stmt.run(description, taskListId, (err) => {
 		if (err) {
 			console.error(err.message);
 		}
@@ -72,6 +84,7 @@ app.delete('/tasks/:id', (req, res) => {
 		res.status(200).send("Task deleted")
 	})
 })
+
 
 app.listen(port, () => {
 	console.log(`Example app listening on port ${port}`)
