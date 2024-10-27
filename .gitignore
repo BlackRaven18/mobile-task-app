@@ -21,3 +21,9 @@ expo-env.d.ts
 
 # example app
 app-example/
+
+# Enviromental files
+.env
+
+# Database file
+*.db

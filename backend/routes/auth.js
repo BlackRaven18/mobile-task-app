@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
@@ -29,6 +30,7 @@ router.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
 
+
         const user = await User.find(username);
         if (!user) {
             return res.status(401).json({ error: 'Authentication failed' });
@@ -37,10 +39,10 @@ router.post('/login', async (req, res) => {
         if (!passwordMatch) {
             return res.status(401).json({ error: 'Authentication failed' });
         }
-        const token = jwt.sign({ userId: user._id }, 'your-secret-key', {
+        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {
             expiresIn: '1h',
         });
-        console.log(token);
+        
         res.status(200).json({ token });
     } catch (error) {
         res.status(500).json({ error: 'Login failed' });
