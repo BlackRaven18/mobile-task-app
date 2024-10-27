@@ -5,8 +5,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 router.use((err, req, res, next) => {
-    console.error(err); // Logujemy szczegóły błędu dla siebie
-    const status = err.statusCode || 500; // Domyślnie 500, jeśli statusCode nie jest ustawiony
+    console.error(err); 
+    const status = err.statusCode || 500;
     res.status(status).json({
         error: err.message || 'Internal Server Error'
     });
