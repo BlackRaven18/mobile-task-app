@@ -1,14 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const sqlite3 = require('sqlite3').verbose();
 const verifyToken = require('../middleware/authMiddleware');
+const db = require('../database');
 
-const db = new sqlite3.Database('./task.db', (err) => {
-    if (err) {
-        console.error(err.message);
-    }
-    console.log('Connected to the database.');
-});
 
 router.get('/',verifyToken, (req, res) => {
 

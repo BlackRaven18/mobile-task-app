@@ -30,7 +30,6 @@ router.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
 
-
         const user = await User.find(username);
         if (!user) {
             return res.status(401).json({ error: 'Authentication failed' });
