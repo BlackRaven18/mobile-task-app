@@ -1,10 +1,10 @@
 import HttpClient from '@/api/HttpClient';
 import { useSession } from '@/auth/ctx';
-import { router } from 'expo-router';
+import { Link, router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { useState } from 'react';
 import { Stack } from 'react-native-flex-layout';
-import { Button, TextInput } from 'react-native-paper';
+import { Button, TextInput, Text, Divider } from 'react-native-paper';
 
 export default function SignIn() {
   const { signIn } = useSession();
@@ -13,6 +13,7 @@ export default function SignIn() {
   const [login, setLogin] = useState('admin');
   const [password, setPassword] = useState('admin');
   const [hidePassword, setHidePassword] = useState(true);
+  const [message, setMessage] = useState('');
 
   const handleSignIn = () => {
     httpClient.signIn(login, password)
@@ -20,6 +21,10 @@ export default function SignIn() {
         SecureStore.setItemAsync('token', response).then(() => {
           signIn();
           router.replace('/');
+        })
+        .catch((error) => {
+          setMessage("Invalid credentials");
+          console.log("bebe");
         })
       });
   }
@@ -42,7 +47,7 @@ export default function SignIn() {
         onChangeText={(text) => setPassword(text)}
         right={
           <TextInput.Icon
-            icon = {hidePassword ? 'eye-off' : 'eye'}
+            icon={hidePassword ? 'eye-off' : 'eye'}
             onPress={() => setHidePassword(!hidePassword)}
           />
         }
@@ -53,6 +58,22 @@ export default function SignIn() {
         onPress={handleSignIn}>
         Sign In
       </Button>
+      <Text style={{ color: 'red' }}>{message}</Text>
+
+      <Divider style={{ margin: 20 }} />
+
+      <Stack spacing={20} style={{ alignItems: 'center' }}>
+        <Text> You don't have account? No problem!</Text>
+
+        <Link href="/sign-up" asChild>
+          <Button
+            mode="contained"
+          >
+            Create Account
+          </Button>
+        </Link>
+      </Stack>
+
 
     </Stack>
   );

@@ -9,14 +9,12 @@ export default function RootLayout() {
   return (
     <SessionProvider>
       <PaperProvider>
-        <Slot />
+        {/* <Slot/> */}
+        <Stack screenOptions={{headerShown: false}}>
+          <Stack.Screen name="sign-in" options={{headerShown: true, headerTitle: 'Sign In'}}/>
+          <Stack.Screen name="sign-up" options={{headerShown: true, headerTitle: 'Sign Up'}}/>
+        </Stack>
       </PaperProvider>
     </SessionProvider>
-    // <PaperProvider>
-    //     <Stack>
-    //       <Stack.Screen name="sign-in" />
-    //       <Stack.Screen name="+not-found" />
-    //     </Stack>
-    // </PaperProvider>
   );
 }
