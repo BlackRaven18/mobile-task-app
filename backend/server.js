@@ -1,5 +1,6 @@
 const express = require('express')
-var cors = require('cors')
+const cors = require('cors')
+const errorHandler = require('./middleware/errorMiddleware')
 
 const taskRoutes = require('./routes/tasks')
 const authRoutes = require('./routes/auth')
@@ -11,6 +12,7 @@ const port = 3000
 
 app.use('/tasks', taskRoutes)
 app.use('/auth', authRoutes)
+app.use(errorHandler) // this needs to be defined after all the routes
 
 app.listen(port, () => {
 	console.log(`Example app listening on port ${port}`)
