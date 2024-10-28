@@ -1,5 +1,6 @@
 import { useContext, createContext, type PropsWithChildren } from 'react';
 import { useStorageState } from './useStorageState';
+import * as SecureStore from 'expo-secure-store';
 
 const AuthContext = createContext<{
   signIn: () => void;
@@ -32,11 +33,16 @@ export function SessionProvider({ children }: PropsWithChildren) {
     <AuthContext.Provider
       value={{
         signIn: () => {
-          // Perform sign-in logic here
           setSession('xxx');
         },
         signOut: () => {
-          setSession(null);
+          SecureStore.deleteItemAsync('session')
+          .then(() => {
+            setSession(null);
+          })
+          .catch((error) => {
+            console.log("Error deleting session:", error);
+          });
         },
         session,
         isLoading,
