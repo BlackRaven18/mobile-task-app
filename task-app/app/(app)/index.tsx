@@ -3,7 +3,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { Link, router } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import { FlatList, View } from "react-native";
-import { IconButton, MD3Colors, Portal, Snackbar } from "react-native-paper";
+import { Button, IconButton, MD3Colors, Portal, Snackbar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import HttpClient from "@/api/HttpClient";
 import { useSession } from "@/auth/ctx";
@@ -48,6 +48,11 @@ export default function Index() {
     setVisible(true);
   }
 
+  const handleSignOut = () => {
+    signOut();
+    router.replace('/sign-in');
+  }
+
   return (
     <View style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1 }}>
@@ -77,20 +82,16 @@ export default function Index() {
           />
         </Link>
 
-        <IconButton
-          icon="minus"
-          mode="contained"
-          iconColor={MD3Colors.tertiary50}
-          size={20}
-          onPress={() => {
-            signOut();
-            router.replace('/sign-in')
-          }}
-
-        />
       </View>
+      
+      <Button
+        mode="contained"
+        onPress={handleSignOut}
+      >
+        Sign Out
+      </Button>
 
-      <Portal>
+      <Portal.Host>
         <Snackbar
           visible={visible}
           onDismiss={onToggleSnackBar}
@@ -103,7 +104,7 @@ export default function Index() {
           }}>
           {message}
         </Snackbar>
-      </Portal>
+      </Portal.Host>
     </View>
   );
 }
