@@ -31,7 +31,6 @@ export default class HttpClient {
                 return response.data.token
             })
             .catch((error) => {
-                console.error(error);
                 return false;
             });
     }
