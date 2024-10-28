@@ -24,7 +24,6 @@ export default function SignIn() {
         })
         .catch((error) => {
           setMessage("Invalid credentials");
-          console.log("bebe");
         })
       });
   }
