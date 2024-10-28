@@ -35,6 +35,16 @@ export default class HttpClient {
             });
     }
 
+    async signUp(username: string, password: string): Promise<string> {
+        return api.post(`/auth/register`, { username, password })
+            .then((response) => {
+                return response.data
+            })
+            .catch((error) => {
+                return false;
+            });
+    }
+
     async getTasks(): Promise<Task[]> {
         return api.get(`/tasks`, { params: { taskListId: 1 } })
             .then((response) => {
