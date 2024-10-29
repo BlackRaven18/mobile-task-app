@@ -7,10 +7,11 @@ import { Button, IconButton, MD3Colors, Portal, Snackbar } from "react-native-pa
 import { SafeAreaView } from "react-native-safe-area-context";
 import HttpClient from "@/api/HttpClient";
 import { useSession } from "@/auth/ctx";
+import { useAuth } from "@/auth/AuthContext";
 
 
 export default function Index() {
-  const { signOut } = useSession();
+  const { signOut } = useAuth();
 
   const httpClient = new HttpClient();
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -24,7 +25,7 @@ export default function Index() {
     })
       .catch((error) => {
         setTasks([]);
-        console.error(error);
+        console.log(error);
       })
   }
 
@@ -50,7 +51,7 @@ export default function Index() {
 
   const handleSignOut = () => {
     signOut();
-    router.replace('/sign-in');
+    // router.replace('/sign-in');
   }
 
   return (
