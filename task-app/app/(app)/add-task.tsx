@@ -23,7 +23,7 @@ export default function AddTaskScreen() {
                 router.back();
             })
             .catch((error) => {
-                console.error(error);
+                console.log(error);
             });
     }
 

@@ -1,13 +1,13 @@
 import HttpClient from '@/api/HttpClient';
-import { useSession } from '@/auth/ctx';
-import { Link, router } from 'expo-router';
+import { useAuth } from '@/auth/AuthContext';
+import { Link } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { useState } from 'react';
 import { Stack } from 'react-native-flex-layout';
-import { Button, TextInput, Text, Divider } from 'react-native-paper';
+import { Button, Divider, Text, TextInput } from 'react-native-paper';
 
 export default function SignIn() {
-  const { signIn } = useSession();
+  const { signIn } = useAuth();
   const httpClient = new HttpClient();
 
   const [login, setLogin] = useState('admin');
@@ -18,13 +18,22 @@ export default function SignIn() {
   const handleSignIn = () => {
     httpClient.signIn(login, password)
       .then((response) => {
-        SecureStore.setItemAsync('token', response).then(() => {
-          signIn();
-          router.replace('/');
-        })
-        .catch((error) => {
-          setMessage("Invalid credentials");
-        })
+        const { accessToken, refreshToken } = response;
+
+        Promise.all([
+          SecureStore.setItemAsync('accessToken', accessToken),
+          SecureStore.setItemAsync('refreshToken', refreshToken),
+        ])
+          .then(() => {
+            console.log('Sign in successful');
+            signIn();
+          }).catch((error) => {
+            console.log(error);
+            setMessage("Invalid credentials");
+          })
+
+      }).catch((error) => {
+        setMessage("Sign-in failed. Please try again.");
       });
   }
 
@@ -72,8 +81,6 @@ export default function SignIn() {
           </Button>
         </Link>
       </Stack>
-
-
     </Stack>
   );
 }

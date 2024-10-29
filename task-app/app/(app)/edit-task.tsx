@@ -21,6 +21,9 @@ export default function EditTaskScreen() {
             console.log(response);
             router.back();
         })
+        .catch((error) => {
+            console.log(error);
+        });
     }
 
     return (

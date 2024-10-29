@@ -4,6 +4,7 @@ const router = express.Router();
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { verifyRefreshToken } = require('../middleware/authMiddleware');
 
 
 router.post('/register', async (req, res, next) => {
@@ -31,11 +32,15 @@ router.post('/login', async (req, res, next) => {
         if (!passwordMatch) {
             return res.status(401).json({ error: 'Authentication failed' });
         }
-        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {
-            expiresIn: '1h',
+        const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {
+            expiresIn: process.env.JWT_TOKEN_EXPIRE_TIME,
+        });
+
+        const refreshToken = jwt.sign({ userId: user._id }, process.env.JWT_REFRESH_SECRET_KEY, {
+            expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRE_TIME,
         });
         
-        res.status(200).json({ token });
+        res.status(200).json({ accessToken, refreshToken });
     } catch (error) {
         console.log(error)
         error.statusCode = 400
@@ -43,5 +48,23 @@ router.post('/login', async (req, res, next) => {
         next(error)
     }
 });
+
+router.post('/refresh', async (req, res, next) => {
+    try {
+        const { refreshToken } = req.body;
+        const { userId } = jwt.verify(refreshToken, process.env.JWT_SECRET_KEY);
+        const accessToken = jwt.sign({ userId }, process.env.JWT_SECRET_KEY, {
+            expiresIn: process.env.JWT_TOKEN_EXPIRE_TIME,
+        });
+        res.status(200).json({ accessToken });
+    } catch (error) {
+        console.log(error)
+        error.statusCode = 403
+        error.message = 'Refresh token failed'
+        next(error)
+    }
+});
+    
+    
 
 module.exports = router;
