@@ -1,12 +1,12 @@
-import TaskCheckboxItem from "@/components/TaskCheckboxItem";
-import { useFocusEffect } from "@react-navigation/native";
-import { Link, router } from "expo-router";
-import React, { useCallback, useEffect, useState } from "react";
-import { FlatList, View } from "react-native";
-import { Button, IconButton, MD3Colors, Portal, Snackbar } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
 import HttpClient from "@/api/HttpClient";
 import { useAuth } from "@/auth/AuthContext";
+import TaskCheckboxItem from "@/components/TaskCheckboxItem";
+import { useFocusEffect } from "@react-navigation/native";
+import { Link } from "expo-router";
+import React, { useCallback, useEffect, useState } from "react";
+import { FlatList, View } from "react-native";
+import { IconButton, MD3Colors, Portal, Snackbar } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 export default function Index() {
@@ -50,7 +50,6 @@ export default function Index() {
 
   const handleSignOut = () => {
     signOut();
-    // router.replace('/sign-in');
   }
 
   return (
@@ -83,13 +82,6 @@ export default function Index() {
         </Link>
 
       </View>
-      
-      <Button
-        mode="contained"
-        onPress={handleSignOut}
-      >
-        Sign Out
-      </Button>
 
       <Portal.Host>
         <Snackbar

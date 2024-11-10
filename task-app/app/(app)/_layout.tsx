@@ -1,8 +1,7 @@
-import { Redirect, Stack } from "expo-router";
 import { useAuth } from "@/auth/AuthContext";
+import AppHeaderMenu from "@/components/AppHeaderMenu";
+import { Redirect, router, Stack } from "expo-router";
 import { Appbar } from "react-native-paper";
-import CustomDrawer from "@/components/CustomDrawer";
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function AppLayout() {
   const { isSignedIn } = useAuth();
@@ -11,17 +10,18 @@ export default function AppLayout() {
     return <Redirect href="/sign-in" />;
   }
 
-  // This layout can be deferred because it's not the root layout.
   return (
     <>
       <Appbar.Header>
+        {router.canGoBack() && <Appbar.BackAction onPress={() => { router.back() }} />}
         <Appbar.Content title="Task App" />
-        <Appbar.Action icon="logout" onPress={() => { }} />
-        <Appbar.Action icon="account" onPress={() => { }} />
-        <Appbar.Action icon="menu" onPress={() => { }} />
+        <AppHeaderMenu />
       </Appbar.Header>
+
       <Stack>
-        <Stack.Screen name="index" options={{headerShown: false}} />
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="add-task" options={{ headerShown: false }} />
+        <Stack.Screen name="edit-task" options={{ headerShown: false }} />
       </Stack>
     </>
   )
