@@ -89,6 +89,17 @@ export default class HttpClient {
             });
     }
 
+    async getAllTaskLists(): Promise<TaskList[]> {
+        return api.get(`/task-lists`)
+            .then((response) => {
+                return response.data
+            })
+            .catch((error) => {
+                console.log(error);
+                return [];
+            });
+    }
+
     async getTasks(): Promise<Task[]> {
         return api.get(`/tasks`, { params: { taskListId: 1 } })
             .then((response) => {

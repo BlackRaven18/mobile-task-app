@@ -30,7 +30,7 @@ router.post('/login', async (req, res, next) => {
         if (!passwordMatch) {
             return res.status(401).json({ error: 'Authentication failed' });
         }
-        const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {
+        const accessToken = jwt.sign({ username: user.username }, process.env.JWT_SECRET_KEY, {
             expiresIn: process.env.JWT_TOKEN_EXPIRE_TIME,
         });
 

@@ -3,6 +3,7 @@ import { router } from "expo-router";
 import { createContext, useState, useContext, PropsWithChildren } from "react";
 
 const AuthContext = createContext({
+    username: "",
     isSignedIn: false,
     signIn: () => {},
     signOut: () => {},
@@ -10,19 +11,19 @@ const AuthContext = createContext({
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
     const [isSignedIn, setIsSignedIn] = useState(false);
+    const [username, setUsername] = useState("");
 
     const signIn = () => {
         setIsSignedIn(true)
+        setUsername(AuthService.getUsername() ?? "");
         router.replace("/(app)")
-        console.log("Signed in")
     };
     const signOut = () => {
         setIsSignedIn(false)
-        //AuthService.signOut()
     };
 
     return (
-        <AuthContext.Provider value={{ isSignedIn, signIn, signOut }}>
+        <AuthContext.Provider value={{ username, isSignedIn, signIn, signOut }}>
             {children}
         </AuthContext.Provider>
     );
