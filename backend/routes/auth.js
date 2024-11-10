@@ -4,8 +4,6 @@ const router = express.Router();
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { verifyRefreshToken } = require('../middleware/authMiddleware');
-
 
 router.post('/register', async (req, res, next) => {
     try {
@@ -52,7 +50,7 @@ router.post('/login', async (req, res, next) => {
 router.post('/refresh', async (req, res, next) => {
     try {
         const { refreshToken } = req.body;
-        const { userId } = jwt.verify(refreshToken, process.env.JWT_SECRET_KEY);
+        const { userId } = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET_KEY);
         const accessToken = jwt.sign({ userId }, process.env.JWT_SECRET_KEY, {
             expiresIn: process.env.JWT_TOKEN_EXPIRE_TIME,
         });

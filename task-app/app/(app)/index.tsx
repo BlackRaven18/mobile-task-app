@@ -6,7 +6,6 @@ import { FlatList, View } from "react-native";
 import { Button, IconButton, MD3Colors, Portal, Snackbar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import HttpClient from "@/api/HttpClient";
-import { useSession } from "@/auth/ctx";
 import { useAuth } from "@/auth/AuthContext";
 
 

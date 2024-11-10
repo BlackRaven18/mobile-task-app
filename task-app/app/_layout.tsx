@@ -1,9 +1,7 @@
-import { ThemeProvider, DarkTheme, DefaultTheme } from "@react-navigation/native";
-import { Slot, Stack } from "expo-router";
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { PaperProvider } from "react-native-paper";
-import { SessionProvider } from "@/auth/ctx";
 import { AuthProvider } from "@/auth/AuthContext";
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { Stack } from "expo-router";
+import { PaperProvider } from "react-native-paper";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
