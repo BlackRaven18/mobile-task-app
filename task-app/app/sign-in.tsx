@@ -2,6 +2,7 @@ import HttpClient from '@/api/HttpClient';
 import { useAuth } from '@/auth/AuthContext';
 import { Link } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
+import AuthService from '@/services/AuthService';
 import { useState } from 'react';
 import { Stack } from 'react-native-flex-layout';
 import { Button, Divider, Text, TextInput } from 'react-native-paper';
@@ -26,6 +27,7 @@ export default function SignIn() {
         ])
           .then(() => {
             console.log('Sign in successful');
+            AuthService.decodeToken(accessToken);
             signIn();
           }).catch((error) => {
             console.log(error);
