@@ -8,8 +8,6 @@ router.get('/',verifyToken, (req, res) => {
 
     const { username } = req.query
 
-    console.log(username)
-
     const stmt = db.prepare("SELECT * FROM task_list WHERE user_id = (SELECT id FROM user WHERE username = ?)");
     stmt.all(username, (err, rows) => {
         if (err) {
@@ -20,7 +18,7 @@ router.get('/',verifyToken, (req, res) => {
             res.status(404).send("No tasks found")
             return
         }
-        console.log(rows)
+
         res.status(200).send(rows)
     })
 })
@@ -36,6 +34,35 @@ router.post('/', verifyToken, (req, res) => {
             console.error(err.message);
         }
         res.status(201).send("Task list created")
+    })
+})
+
+//DELETE task list
+router.delete('/:username/:id', verifyToken, (req, res) => {
+    const { id, username } = req.params
+
+    const delete_related_tasks_stmt = db.prepare("DELETE FROM task WHERE task_list_id = ?");
+    const delete_task_list_stmt = db.prepare("DELETE FROM task_list WHERE user_id = (SELECT id FROM user WHERE username = ?) AND id = ?");
+
+    console.log(id, username)
+
+    // const stmt = db.prepare(
+    //     "DELETE FROM task_list WHERE id = (SELECT id FROM user WHERE username = ?)"
+    // );
+
+    result = delete_related_tasks_stmt.run(id, (err) => {
+        if (err) {
+            console.error(err.message);
+        }
+
+        delete_task_list_stmt.run(username, id, (err) => {
+            if (err) {
+                console.error(err.message);
+            }
+            console.log("deleted")
+        })
+
+        res.status(200).send("Task list deleted")
     })
 })
 
