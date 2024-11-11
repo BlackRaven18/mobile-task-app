@@ -5,56 +5,101 @@ import { useFocusEffect } from "@react-navigation/native";
 import { Link } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import { FlatList, View } from "react-native";
-import { IconButton, MD3Colors, Portal, Snackbar } from "react-native-paper";
+import { Divider, IconButton, List, MD3Colors, Portal, Snackbar, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Stack } from 'react-native-flex-layout';
 
 
 export default function Index() {
-  const { signOut } = useAuth();
+  const { username } = useAuth();
 
   const httpClient = new HttpClient();
+  const [taskLists, setTaskLists] = useState<TaskList[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [visible, setVisible] = useState(false);
   const [message, setMessage] = useState('');
   const onToggleSnackBar = () => setVisible(!visible);
 
-  const getTasks = () => {
-    httpClient.getTasks().then((tasks) => {
-      setTasks(tasks);
-    })
+  const getTaskLists = () => {
+    httpClient.getAllTaskLists(username)
+      .then((taskLists) => {
+        console.log(taskLists);
+        setTaskLists(taskLists);
+        console.log(taskLists);
+      })
       .catch((error) => {
-        setTasks([]);
         console.log(error);
       })
   }
 
+
   useEffect(() => {
-    getTasks();
+    getTaskLists();
   }, [])
 
   useFocusEffect(
     useCallback(() => {
-      getTasks();
     }, [])
   );
 
-  const refresh = () => {
-    getTasks();
-  }
+  // const refresh = () => {
+  //   getTasks();
+  // }
 
-  const afterTaskDeleteCallback = (message: string) => {
-    refresh();
-    setMessage(message);
-    setVisible(true);
-  }
+  // const afterTaskDeleteCallback = (message: string) => {
+  //   refresh();
+  //   setMessage(message);
+  //   setVisible(true);
+  // }
 
-  const handleSignOut = () => {
-    signOut();
-  }
+
 
   return (
     <View style={{ flex: 1 }}>
+
+      <View style={{
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignContent: 'center',
+        marginTop: 15,
+        marginBottom: 10
+      }}
+      >
+        <Text style={{ fontSize: 24 }}> Twoje notatki</Text>
+
+      </View>
+
+      <Divider style={{ marginHorizontal: 10 }} />
+
       <SafeAreaView style={{ flex: 1 }}>
+        <FlatList
+          data={taskLists}
+          renderItem={({ item }) => (
+            <Stack direction="row" style={{ flex: 1, padding: 10 }}>
+              <List.Icon color={MD3Colors.tertiary70} icon="note-edit" />
+              <Link
+                href={{
+                  pathname: '/task-list-details',
+                  params: { 
+                    id: item.id,
+                    title: item.title
+                  }
+                }}
+                asChild
+              >
+                <List.Item
+                  title={item.title}
+                  onPress={() => { console.log("Pressed") }}
+                  style={{ flex: 1 }}
+                />
+              </Link>
+            </Stack>
+          )}
+          keyExtractor={item => item.id.toString()}
+        />
+      </SafeAreaView>
+
+      {/* <SafeAreaView style={{ flex: 1 }}>
         <FlatList
           data={tasks}
           renderItem={({ item }) => (
@@ -66,12 +111,12 @@ export default function Index() {
           )}
           keyExtractor={item => item.id.toString()}
         />
-      </SafeAreaView>
+      </SafeAreaView> */}
 
 
 
       <View style={{ flexDirection: 'row', justifyContent: 'center', alignContent: 'center', padding: 10 }}>
-        <Link href="/add-task" asChild>
+        <Link href="/add-task-list" asChild>
           <IconButton
             icon="plus"
             mode="contained"

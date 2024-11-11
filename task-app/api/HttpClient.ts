@@ -89,9 +89,11 @@ export default class HttpClient {
             });
     }
 
-    async getAllTaskLists(): Promise<TaskList[]> {
-        return api.get(`/task-lists`)
+    async getAllTaskLists(username: string): Promise<TaskList[]> {
+        return api.get(`/task-lists`, { params: { username } })
             .then((response) => {
+                console.log("bebe: " + username)
+                console.log(response.data)
                 return response.data
             })
             .catch((error) => {
@@ -100,8 +102,8 @@ export default class HttpClient {
             });
     }
 
-    async getTasks(): Promise<Task[]> {
-        return api.get(`/tasks`, { params: { taskListId: 1 } })
+    async getTasks(listId: number): Promise<Task[]> {
+        return api.get(`/tasks`, { params: { taskListId: listId } })
             .then((response) => {
                 return response.data
             })
