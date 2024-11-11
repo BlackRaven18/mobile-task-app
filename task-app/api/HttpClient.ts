@@ -100,6 +100,17 @@ export default class HttpClient {
             });
     }
 
+    async addTaskList(title: string, username: string): Promise<TaskList> {
+        return api.post(`/task-lists`, { title, username })
+            .then((response) => {
+                return response.data
+            })
+            .catch((error) => {
+                console.log(error);
+                return {};
+            });
+    }
+
     async getTasks(listId: number): Promise<Task[]> {
         return api.get(`/tasks`, { params: { taskListId: listId } })
             .then((response) => {
