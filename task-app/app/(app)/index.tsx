@@ -1,11 +1,12 @@
 import HttpClient from "@/api/HttpClient";
 import { useAuth } from "@/auth/AuthContext";
 import AddTaskModal from "@/components/AddTaskModal";
+import TaskListEntry from "@/components/TaskListEntry";
 import { Link } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { FlatList, View } from "react-native";
 import { Stack } from 'react-native-flex-layout';
-import { Divider, IconButton, List, MD3Colors, Text } from "react-native-paper";
+import { Dialog, Divider, IconButton, List, MD3Colors, Portal, Text, Button } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 
@@ -15,6 +16,10 @@ export default function Index() {
   const httpClient = new HttpClient();
   const [taskLists, setTaskLists] = useState<TaskList[]>([]);
   const [visible, setVisible] = useState(false);
+
+  const openDialog = () => setVisible(true);
+  const hideDialog = () => setVisible(false);
+
 
   const getTaskLists = () => {
     httpClient.getAllTaskLists(username)
@@ -56,40 +61,14 @@ export default function Index() {
         <FlatList
           data={taskLists}
           renderItem={({ item }) => (
-            <Stack direction="row" style={{ flex: 1, padding: 10 }}>
-              <List.Icon color={MD3Colors.tertiary50} icon="note-edit" />
-              <Link
-                href={{
-                  pathname: '/task-list-details',
-                  params: {
-                    id: item.id,
-                    title: item.title
-                  }
-                }}
-                asChild
-              >
-                <List.Item
-                  title={item.title}
-                  onPress={() => { console.log("Pressed") }}
-                  style={{ flex: 1 }}
-                />
-              </Link>
-              <IconButton
-                icon="delete"
-                iconColor={MD3Colors.error50}
-                onPress={() => { }}
-              />
-              <IconButton
-                icon="pencil"
-                onPress={() => { }}
-              />
-            </Stack>
+            <TaskListEntry id={item.id} title={item.title} refresh={refresh}/>
           )}
           keyExtractor={item => item.id.toString()}
         />
       </SafeAreaView>
 
-      <AddTaskModal refresh={refresh}/>
+      <AddTaskModal refresh={refresh} />
+
 
     </View >
   );
