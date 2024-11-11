@@ -1,4 +1,5 @@
 import { useAuth } from "@/auth/AuthContext";
+import { router } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
 import { Menu, Appbar, Divider } from "react-native-paper";
@@ -26,7 +27,7 @@ export default function AppHeaderMenu() {
                     <Menu.Item 
                         leadingIcon="note-edit" 
                         title="Twoje notatki" 
-                        onPress={() => {}}
+                        onPress={() => { router.navigate("/(app)") }}
                         />
                     <Divider />
                     <Menu.Item
