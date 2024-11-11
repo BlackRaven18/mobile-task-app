@@ -15,7 +15,6 @@ export default function Index() {
 
   const httpClient = new HttpClient();
   const [taskLists, setTaskLists] = useState<TaskList[]>([]);
-  const [tasks, setTasks] = useState<Task[]>([]);
   const [visible, setVisible] = useState(false);
   const [message, setMessage] = useState('');
   const onToggleSnackBar = () => setVisible(!visible);
@@ -23,9 +22,7 @@ export default function Index() {
   const getTaskLists = () => {
     httpClient.getAllTaskLists(username)
       .then((taskLists) => {
-        console.log(taskLists);
         setTaskLists(taskLists);
-        console.log(taskLists);
       })
       .catch((error) => {
         console.log(error);

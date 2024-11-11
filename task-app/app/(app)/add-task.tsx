@@ -2,9 +2,15 @@ import HttpClient from "@/api/HttpClient";
 import { useState } from "react";
 import { View } from "react-native";
 import { Button, TextInput, Text } from "react-native-paper";
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
+
+type AddTaskScreenProps = {
+    listId: number
+}
 
 export default function AddTaskScreen() {
+
+    const params: AddTaskScreenProps = useLocalSearchParams();
 
     const [taskDescription, setTaskDescription] = useState('');
     const [message, setMessage] = useState('');
@@ -17,7 +23,7 @@ export default function AddTaskScreen() {
             return;
         }
 
-        httpClient.addTask(taskDescription)
+        httpClient.addTask(params.listId, taskDescription)
             .then((response) => {
                 console.log(response);
                 router.back();
