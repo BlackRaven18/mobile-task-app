@@ -64,8 +64,6 @@ export default function TaskListDetailsScreen() {
         setVisible(true);
     }
 
-
-
     return (
 
         <View style={{ flex: 1 }}>
@@ -101,7 +99,6 @@ export default function TaskListDetailsScreen() {
                 )}
 
 
-
             <View style={{ flexDirection: 'row', justifyContent: 'center', alignContent: 'center', padding: 10 }}>
                 <Link href={{
                     pathname: '/add-task',
@@ -120,7 +117,7 @@ export default function TaskListDetailsScreen() {
 
             </View>
 
-            <Portal.Host>
+            <Portal>
                 <Snackbar
                     visible={visible}
                     onDismiss={onToggleSnackBar}
@@ -133,7 +130,7 @@ export default function TaskListDetailsScreen() {
                     }}>
                     {message}
                 </Snackbar>
-            </Portal.Host>
+            </Portal>
         </View>
     );
 
