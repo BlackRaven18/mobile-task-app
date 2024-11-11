@@ -111,6 +111,17 @@ export default class HttpClient {
             });
     }
 
+    async updateTaskList(id: number, title: string, username: string): Promise<TaskList> {
+        return api.put(`/task-lists/${username}/${id}`, { title })
+            .then((response) => {
+                return response.data
+            })
+            .catch((error) => {
+                console.log(error);
+                return {};
+            });
+    }
+
     async deleteTaskList(id: number, username: string): Promise<String> {
         return api.delete(`/task-lists/${username}/${id}` )
             .then((response) => {

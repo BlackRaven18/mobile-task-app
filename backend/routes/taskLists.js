@@ -4,7 +4,7 @@ const { verifyToken } = require('../middleware/authMiddleware');
 const db = require('../database');
 
 // GET all username task lists
-router.get('/',verifyToken, (req, res) => {
+router.get('/', verifyToken, (req, res) => {
 
     const { username } = req.query
 
@@ -35,6 +35,21 @@ router.post('/', verifyToken, (req, res) => {
         }
         res.status(201).send("Task list created")
     })
+})
+
+// UPDATE task list
+router.put('/:username/:id', verifyToken, (req, res) => {
+    const { username, id } = req.params
+    const { title } = req.body
+
+    const stmt = db.prepare("UPDATE task_list SET title = ? WHERE user_id = (SELECT id FROM user WHERE username = ?) AND id = ?");
+    stmt.run(title, username, id, (err) => {
+        if (err) {
+            console.error(err.message);
+        }
+        res.status(200).send("Task list updated")
+    })
+
 })
 
 //DELETE task list

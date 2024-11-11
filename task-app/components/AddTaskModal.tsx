@@ -40,7 +40,7 @@ export default function AddTaskModal(props: AddTaskModalProps) {
                     }}
                 >
                     <Stack spacing={10}>
-                        <Text style={{ fontSize: 24 }}> Twoje notatki</Text>
+                        <Text style={{ fontSize: 24 }}> Add New Task List</Text>
                         <Divider />
                         <TextInput
                             label="Title"
