@@ -103,7 +103,12 @@ export default function TaskListDetailsScreen() {
 
 
             <View style={{ flexDirection: 'row', justifyContent: 'center', alignContent: 'center', padding: 10 }}>
-                <Link href="/add-task" asChild>
+                <Link href={{
+                    pathname: '/add-task',
+                    params: {
+                        listId: params.id
+                    }
+                }} asChild>
                     <IconButton
                         icon="plus"
                         mode="contained"
