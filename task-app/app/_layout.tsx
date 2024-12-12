@@ -45,13 +45,18 @@ async function migrateDbIfNeeded(db: SQLiteDatabase) {
 
             CREATE TABLE task_list (
                 id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                title TEXT UNIQUE
+                title TEXT UNIQUE,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                deleted INTEGER DEFAULT 0
             );
 
             CREATE TABLE task (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 description TEXT,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 task_list_id INTEGER,
+                deleted INTEGER DEFAULT 0,
+                
                 FOREIGN KEY (task_list_id) REFERENCES task_list (id) ON DELETE CASCADE
             );
         `);
