@@ -44,19 +44,19 @@ async function migrateDbIfNeeded(db: SQLiteDatabase) {
             PRAGMA journal_mode = 'wal';
 
             CREATE TABLE task_list (
-                id INTEGER PRIMARY KEY NOT NULL, 
-                title TEXT
+                id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                title TEXT UNIQUE
             );
 
             CREATE TABLE task (
-                id INTEGER PRIMARY KEY NOT NULL,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 description TEXT,
                 task_list_id INTEGER,
                 FOREIGN KEY (task_list_id) REFERENCES task_list (id) ON DELETE CASCADE
             );
         `);
-        await db.runAsync('INSERT INTO task_list (id, title) VALUES (?, ?)', 1, 'First task list');
-        await db.runAsync('INSERT INTO task (id, description, task_list_id) VALUES (?, ?, ?)', 1, 'First task', 1);
+        await db.runAsync('INSERT INTO task_list (title) VALUES (?)', 'First task list');
+        await db.runAsync('INSERT INTO task (description, task_list_id) VALUES (?, ?)', 'First task', 1);
         currentDbVersion = 1;
     }
     // if (currentDbVersion === 1) {

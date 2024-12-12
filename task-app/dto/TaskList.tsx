@@ -9,3 +9,5 @@ class TaskList {
         this.tasks = tasks;
     }
 }
+
+export default TaskList
