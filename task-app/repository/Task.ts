@@ -51,16 +51,15 @@ export default class TaskRepository {
 
         const statement = await this.db.prepareAsync(
             `
-            INSERT OR IGNORE INTO task (description, task_list_id, updated_at, deleted) 
-            VALUES ($description, $taskListId, CURRENT_TIMESTAMP, $deleted)
+            INSERT OR IGNORE INTO task (description, task_list_id, updated_at) 
+            VALUES ($description, $taskListId, CURRENT_TIMESTAMP)
             `
         )
 
         try {
             await statement.executeAsync({
                 $description: description,
-                $taskListId: taskListId,
-                $deleted: false
+                $taskListId: taskListId
             })
         } finally {
             await statement.finalizeAsync();

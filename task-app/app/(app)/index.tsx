@@ -19,7 +19,7 @@ export default function Index() {
 
 	const getTaskLists = () => {
 
-		taskListRepository.findAll(username)
+		taskListRepository.findAll()
 			.then((taskLists) => {
 				setTaskLists(taskLists);
 			})

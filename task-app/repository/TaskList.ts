@@ -7,17 +7,21 @@ export default class TaskListRepository {
         this.db = db
     }
 
-    async findAll(username: string): Promise<TaskList[]> {
+    async findAll(): Promise<TaskList[]> {
 
         let taskLists: TaskList[] = []
 
         const statement = await this.db.prepareAsync(
-            'SELECT * FROM task_list'
+            `
+            SELECT * 
+            FROM task_list
+            WHERE deleted = 0
+            `
         )
 
         try {
-            const result = await statement.executeAsync<{ 
-                id: number, 
+            const result = await statement.executeAsync<{
+                id: number,
                 title: string,
                 updated_at: Date,
                 deleted: boolean
@@ -39,7 +43,8 @@ export default class TaskListRepository {
     async insert(taskListTitle: string) {
 
         const statement = await this.db.prepareAsync(
-            'INSERT OR IGNORE INTO task_list (title) VALUES ($title) '
+            `INSERT OR IGNORE INTO task_list (title, updated_at) 
+            VALUES ($title, CURRENT_TIMESTAMP)`
         )
 
         try {
@@ -59,7 +64,11 @@ export default class TaskListRepository {
     async remove(taskListTitle: string) {
 
         const statement = await this.db.prepareAsync(
-            'DELETE FROM task_list WHERE title = $title'
+            `
+            UPDATE task_list 
+            SET deleted = 1 
+            WHERE title = $title
+            `
         )
 
         try {
@@ -75,7 +84,10 @@ export default class TaskListRepository {
     async update(oldTitle: string, newTitle: string) {
 
         const statement = await this.db.prepareAsync(
-            'UPDATE task_list SET title = $newTitle WHERE title = $oldTitle'
+            `UPDATE task_list 
+            SET title = $newTitle,
+                updated_at = CURRENT_TIMESTAMP 
+            WHERE title = $oldTitle`
         )
 
         try {
