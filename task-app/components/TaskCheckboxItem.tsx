@@ -1,8 +1,9 @@
-import HttpClient from "@/api/HttpClient";
 import { Link } from "expo-router";
 import { useState } from "react";
-import { View, StyleSheet } from "react-native";
-import { Checkbox, IconButton, Text, MD3Colors, Snackbar, Portal, Tooltip } from "react-native-paper";
+import { View } from "react-native";
+import { Checkbox, IconButton, MD3Colors, Text } from "react-native-paper";
+import TaskRepository from "@/repository/Task";
+import { useSQLiteContext } from "expo-sqlite";
 
 type TaskCheckboxItemProps = {
     id: number;
@@ -12,17 +13,19 @@ type TaskCheckboxItemProps = {
 
 export default function TaskCheckboxItem(props: TaskCheckboxItemProps) {
 
-    const httpClient = new HttpClient();
+    const db = useSQLiteContext();
+    const taskRepository = new TaskRepository(db);
+
     const [checked, setChecked] = useState<"checked" | "unchecked" | "indeterminate">("unchecked");
 
     const removeTask = () => {
-        httpClient.deleteTask(props.id).then((response) => {
-            console.log(response);
-            props.afterDeleteCallback(response.toString());
-        }).catch((error) => {
-            console.error(error);
-        });
-
+        taskRepository.remove(props.id)
+            .then(() => {
+                props.afterDeleteCallback("Task removed successfully");
+            })
+            .catch((error) => {
+                console.log(error);
+            })
     }
 
     return (

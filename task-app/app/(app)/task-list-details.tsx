@@ -1,11 +1,13 @@
 import HttpClient from "@/api/HttpClient";
 import { useAuth } from "@/auth/AuthContext";
-import { useFocusEffect, Link, useLocalSearchParams } from "expo-router";
-import { useState, useEffect, useCallback } from "react";
-import { View, SafeAreaView, FlatList } from "react-native";
-import { Divider, List, MD3Colors, IconButton, Portal, Snackbar, Text } from "react-native-paper";
-import { Stack } from 'react-native-flex-layout';
 import TaskCheckboxItem from "@/components/TaskCheckboxItem";
+import Task from "@/dto/Task";
+import { Link, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
+import { FlatList, SafeAreaView, View } from "react-native";
+import { Divider, IconButton, MD3Colors, Portal, Snackbar, Text } from "react-native-paper";
+import TaskRepository from "@/repository/Task";
+import { useSQLiteContext } from "expo-sqlite";
 
 interface TaskListDetailsScreenParams {
     id: number
@@ -22,19 +24,20 @@ function EmptyTaskList() {
 
 export default function TaskListDetailsScreen() {
     const { username } = useAuth();
+    const db = useSQLiteContext();
 
     const params: TaskListDetailsScreenParams = useLocalSearchParams();
 
+    const taskRepository = new TaskRepository(db);
     const httpClient = new HttpClient();
+
     const [tasks, setTasks] = useState<Task[]>([]);
     const [visible, setVisible] = useState(false);
     const [message, setMessage] = useState('');
     const onToggleSnackBar = () => setVisible(!visible);
 
-
-
     const getTasks = () => {
-        httpClient.getTasks(params.id)
+        taskRepository.findAllByTaskListId(params.id.toString())
             .then((tasks) => {
                 setTasks(tasks);
             })

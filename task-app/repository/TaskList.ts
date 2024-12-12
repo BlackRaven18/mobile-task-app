@@ -22,7 +22,6 @@ export default class TaskListRepository {
             for (const row of allRows) {
                 const taskList = new TaskList(row.id, row.title, []);
                 taskLists.push(taskList);
-                console.log(row);
             }
 
         } finally {
