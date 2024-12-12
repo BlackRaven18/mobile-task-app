@@ -16,11 +16,16 @@ export default class TaskListRepository {
         )
 
         try {
-            const result = await statement.executeAsync<{ id: number, title: string }>()
+            const result = await statement.executeAsync<{ 
+                id: number, 
+                title: string,
+                updated_at: Date,
+                deleted: boolean
+            }>()
 
             const allRows = await result.getAllAsync();
             for (const row of allRows) {
-                const taskList = new TaskList(row.id, row.title, []);
+                const taskList = new TaskList(row.id, row.title, [], row.updated_at, row.deleted);
                 taskLists.push(taskList);
             }
 
