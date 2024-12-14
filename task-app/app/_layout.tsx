@@ -1,16 +1,11 @@
-import { SQLiteProvider, useSQLiteContext, openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
-import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { AuthProvider } from "@/auth/AuthContext";
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Stack } from "expo-router";
+import { SQLiteProvider, type SQLiteDatabase } from 'expo-sqlite';
 import { PaperProvider } from "react-native-paper";
 
 export default function RootLayout() {
     const colorScheme = useColorScheme();
-    const db = openDatabaseSync('test_database');
-
-    useDrizzleStudio(db);
-
 
     return (
         <SQLiteProvider databaseName="test.db" onInit={migrateDbIfNeeded}>

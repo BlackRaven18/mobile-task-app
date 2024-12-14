@@ -24,6 +24,7 @@ export default class TaskRepository {
         try {
             const result = await statement.executeAsync<{
                 id: number,
+                task_list_id: number,
                 description: string,
                 updated_at: Date,
                 deleted: boolean
@@ -35,7 +36,7 @@ export default class TaskRepository {
             const allRows = await result.getAllAsync();
             for (const row of allRows) {
 
-                const task = new Task(row.id, row.description, row.updated_at, row.deleted);
+                const task = new Task(row.id, row.task_list_id, row.description, row.updated_at, row.deleted);
                 tasks.push(task);
                 console.log(row);
             }
@@ -47,20 +48,24 @@ export default class TaskRepository {
         return tasks;
     }
 
-    async insert(description: string, taskListId: number) {
+    async insert(description: string, taskListTitle: string) {
 
         const statement = await this.db.prepareAsync(
             `
             INSERT OR IGNORE INTO task (description, task_list_id, updated_at) 
-            VALUES ($description, $taskListId, CURRENT_TIMESTAMP)
+            VALUES ($description, (SELECT id FROM task_list WHERE title = $taskListTitle), CURRENT_TIMESTAMP)
             `
         )
+
+        console.log("Task list tile", taskListTitle);
 
         try {
             await statement.executeAsync({
                 $description: description,
-                $taskListId: taskListId
+                $taskListTitle: taskListTitle
             })
+
+
         } finally {
             await statement.finalizeAsync();
         }

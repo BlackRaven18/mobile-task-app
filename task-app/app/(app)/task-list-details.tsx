@@ -106,6 +106,7 @@ export default function TaskListDetailsScreen() {
                 <Link href={{
                     pathname: '/add-task',
                     params: {
+                        listTitle: params.title,
                         listId: params.id
                     }
                 }} asChild>
