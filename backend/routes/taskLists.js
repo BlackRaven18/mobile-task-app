@@ -61,10 +61,6 @@ router.delete('/:username/:id', verifyToken, (req, res) => {
 
     console.log(id, username)
 
-    // const stmt = db.prepare(
-    //     "DELETE FROM task_list WHERE id = (SELECT id FROM user WHERE username = ?)"
-    // );
-
     result = delete_related_tasks_stmt.run(id, (err) => {
         if (err) {
             console.error(err.message);
@@ -80,7 +76,5 @@ router.delete('/:username/:id', verifyToken, (req, res) => {
         res.status(200).send("Task list deleted")
     })
 })
-
-
 
 module.exports = router;

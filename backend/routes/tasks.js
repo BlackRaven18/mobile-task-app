@@ -3,7 +3,6 @@ const router = express.Router();
 const { verifyToken } = require('../middleware/authMiddleware');
 const db = require('../database');
 
-
 router.get('/',verifyToken, (req, res) => {
 
     const { taskListId } = req.query
