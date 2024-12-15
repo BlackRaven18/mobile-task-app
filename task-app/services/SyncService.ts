@@ -19,7 +19,6 @@ async function performSync(db: SQLiteDatabase, lastSync: string, username: strin
     for (const taskList of serverChanges.taskLists) {
         if (taskList.deleted) {
             await taskListRepository.remove(taskList.title);
-            //TODO: think of deleting tasks as well
         } else {
             await taskListRepository.insert(taskList.title);
         }

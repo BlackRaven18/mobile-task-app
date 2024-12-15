@@ -8,34 +8,31 @@ import { openDatabaseSync } from "expo-sqlite";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Appbar, MD2Colors, MD3Colors } from "react-native-paper";
 import { View, Text } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 export default function AppLayout() {
   const { isSignedIn, username } = useAuth();
-  const [isSyncing, setIsSyncing] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(true);
 
   useEffect(() => {
     if (isSignedIn) {
-      syncData(username);
+      syncData(username)
+      .then(() => setIsSyncing(false))
+      .catch(error => console.log(error))
     }
   }, [isSignedIn])
 
-  const syncData = (username: string) => {
+  const syncData = async (username: string) => {
     const db = openDatabaseSync('test.db');
 
-    AsyncStorageService.getData('lastSync')
-      .then((value) => {
-        const lastSync = value ?? '1970-01-01 12:00:00';
-        console.log('lastSync: ', lastSync);
+    const lastSync =  await AsyncStorageService.getData('lastSync') ?? '1970-01-01 12:00:00';
+    await performSync(db, lastSync, username)
 
-        performSync(db, lastSync, username)
-          .then(() => {
-            const currentDateTime = getCurrentDateTime();
-            // AsyncStorageService.storeData('lastSync', currentDateTime);
-            console.log("Sync complete, updated lastSync to: ", currentDateTime);
-            setIsSyncing(false);
-          })
-      })
+    const currentDateTime = getCurrentDateTime();
+    await AsyncStorageService.storeData('lastSync', currentDateTime);
+    console.log("Sync complete, updated lastSync to: ", currentDateTime);
+
   }
 
   if (!isSignedIn) {
@@ -69,4 +66,8 @@ export default function AppLayout() {
       )}
     </>
   )
+}
+
+function useCallback(arg0: (username: string) => Promise<void>, arg1: never[]) {
+  throw new Error("Function not implemented.");
 }
