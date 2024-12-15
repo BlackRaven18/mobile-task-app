@@ -102,6 +102,26 @@ export default class HttpClient {
             });
     }
 
+    async postClientChanges(username: string, taskLists: TaskList[], tasks: Task[]): Promise<string> {
+
+        const body = { 
+            username: username,
+            clientChanges: {
+                taskLists: taskLists,
+                tasks: tasks
+            }
+        };
+
+        return api.post(`/sync`,  body )
+            .then((response) => {
+                return response.data
+            })
+            .catch((error) => {
+                console.log(error);
+                return "";
+            })
+    }
+
     async getAllTaskLists(username: string): Promise<TaskList[]> {
         return api.get(`/task-lists`, { params: { username } })
             .then((response) => {

@@ -53,8 +53,7 @@ async function migrateDbIfNeeded(db: SQLiteDatabase) {
                 FOREIGN KEY (task_list_id) REFERENCES task_list (id) ON DELETE CASCADE
             );
         `);
-        await db.runAsync('INSERT INTO task_list (title) VALUES (?)', 'First task list');
-        await db.runAsync('INSERT INTO task (description, task_list_id) VALUES (?, ?)', 'First task', 1);
+        
         currentDbVersion = 1;
     }
     // if (currentDbVersion === 1) {

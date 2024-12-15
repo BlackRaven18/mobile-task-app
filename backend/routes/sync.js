@@ -44,6 +44,76 @@ router.get('/', async (req, res) => {
     res.status(200).send({ taskLists: changedTaskList, tasks: changedTasks });
 })
 
+router.post('/', async (req, res) => {
+    const { clientChanges, username } = req.body;
+
+    if (!clientChanges) {
+        res.status(400).send("Missing clientChanges parameter");
+        return;
+    }
+
+    if (!clientChanges.taskLists) {
+        res.status(400).send("Missing taskLists parameter in clientChanges");
+        return;
+    }
+
+    if (!clientChanges.tasks) {
+        res.status(400).send("Missing tasks parameter in clientChanges");
+        return;
+    }
+
+    if (!clientChanges.taskLists.length && !clientChanges.tasks.length) {
+        res.status(200).send("No changes detected");
+        return;
+    }
+
+    if (!username) {
+        res.status(400).send("Missing username parameter");
+        return;
+    }
+
+    try {
+
+        for (const taskList of clientChanges.taskLists) {
+            if (taskList.deleted) {
+                await db.run(`
+                    DELETE FROM task_list 
+                    WHERE task_list.title = ? 
+                    AND task_list.user_id = (SELECT id FROM user WHERE username = ?)`,
+                    [taskList.title, username]
+                );
+            } else {
+                await db.run(`
+                    INSERT OR IGNORE INTO task_list (title, user_id) 
+                    VALUES (?, (SELECT id FROM user WHERE username = ?))`,
+                    [taskList.title, username]
+                );
+            }
+        }
+
+        for (const task of clientChanges.tasks) {
+            if (task.deleted) {
+                await db.run(`
+                    DELETE FROM task 
+                    WHERE task.id = ?`,
+                    [task.id]
+                );
+            } else {
+                await db.run(`
+                    INSERT OR IGNORE INTO task (description, task_list_id) 
+                    VALUES (?, (SELECT id FROM task_list WHERE title = ?))`,
+                    [task.description, task.task_list_title]
+                );
+            }
+        }
+    } catch (err) {
+        console.log(err);
+    }
+
+    res.status(200).send("Sync successful");
+
+})
+
 const fetchAll = async (db, sql, params) => {
     return new Promise((resolve, reject) => {
         db.all(sql, params, (err, rows) => {
