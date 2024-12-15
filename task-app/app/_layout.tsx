@@ -37,14 +37,14 @@ async function migrateDbIfNeeded(db: SQLiteDatabase) {
             PRAGMA journal_mode = 'wal';
 
             CREATE TABLE task_list (
-                id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                id TEXT PRIMARY KEY, 
                 title TEXT UNIQUE,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 deleted INTEGER DEFAULT 0
             );
 
             CREATE TABLE task (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id TEXT PRIMARY KEY,
                 description TEXT,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 task_list_id INTEGER,
@@ -53,7 +53,7 @@ async function migrateDbIfNeeded(db: SQLiteDatabase) {
                 FOREIGN KEY (task_list_id) REFERENCES task_list (id) ON DELETE CASCADE
             );
         `);
-        
+
         currentDbVersion = 1;
     }
     // if (currentDbVersion === 1) {

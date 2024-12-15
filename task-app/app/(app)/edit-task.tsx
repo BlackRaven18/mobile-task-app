@@ -18,7 +18,7 @@ export default function EditTaskScreen() {
     const taskRepository = new TaskRepository(db);
 
     const saveChanges = (description: string) => {
-        taskRepository.update(parseInt(params.id), description)
+        taskRepository.update(params.id, description)
             .then(() => {
                 router.back();
             })

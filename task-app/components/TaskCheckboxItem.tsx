@@ -6,7 +6,7 @@ import TaskRepository from "@/repository/Task";
 import { useSQLiteContext } from "expo-sqlite";
 
 type TaskCheckboxItemProps = {
-    id: number;
+    id: string;
     label: string;
     afterDeleteCallback: (message: string) => void;
 }

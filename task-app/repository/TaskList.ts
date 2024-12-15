@@ -1,6 +1,7 @@
 import TaskList from "@/dto/TaskList";
 import { SQLiteDatabase } from "expo-sqlite";
 import { getCurrentDateTime } from "@/utils/date";
+import uuid from 'react-native-uuid';
 
 export default class TaskListRepository {
     private db: SQLiteDatabase
@@ -22,7 +23,7 @@ export default class TaskListRepository {
 
         try {
             const result = await statement.executeAsync<{
-                id: number,
+                id: string,
                 title: string,
                 updated_at: Date,
                 deleted: boolean
@@ -54,7 +55,7 @@ export default class TaskListRepository {
 
         try {
             const result = await statement.executeAsync<{
-                id: number,
+                id: string,
                 title: string,
                 updated_at: Date,
                 deleted: boolean
@@ -78,18 +79,19 @@ export default class TaskListRepository {
     async insert(taskListTitle: string) {
 
         const statement = await this.db.prepareAsync(
-            `INSERT OR IGNORE INTO task_list (title, updated_at) 
-            VALUES ($title, $currentTime)`
+            `INSERT OR IGNORE INTO task_list (id, title, updated_at) 
+            VALUES ($id, $title, $currentTime)`
         )
 
         try {
-            const result = await statement.executeAsync({ $title: taskListTitle, $currentTime: getCurrentDateTime() })
+            const result = await statement.executeAsync({
+                $id: uuid.v4(), 
+                $title: taskListTitle, 
+                $currentTime: getCurrentDateTime() })
 
             if (result.changes == 0) {
                 console.log("Task list already exists");
             }
-
-            console.log("Inserted task list", result.lastInsertRowId, result.changes);
 
         } finally {
             await statement.finalizeAsync();
@@ -113,31 +115,27 @@ export default class TaskListRepository {
                 $title: taskListTitle,
              })
 
-            console.log("Removed task list", result.lastInsertRowId, result.changes);
-
         } finally {
             await statement.finalizeAsync();
         }
     }
 
 
-    async update(oldTitle: string, newTitle: string) {
+    async update(id: string, newTitle: string) {
 
         const statement = await this.db.prepareAsync(
             `UPDATE task_list 
             SET title = $newTitle,
                 updated_at = $currentTime 
-            WHERE title = $oldTitle`
+            WHERE id = $id`
         )
 
         try {
             const result = await statement.executeAsync({ 
                 $newTitle: newTitle,
                 $currentTime: getCurrentDateTime(), 
-                $oldTitle: oldTitle, 
+                $id: id
             })
-
-            console.log("Updated task list", result.lastInsertRowId, result.changes);
 
         } finally {
             await statement.finalizeAsync();

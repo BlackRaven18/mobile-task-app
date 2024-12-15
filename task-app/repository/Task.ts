@@ -1,6 +1,7 @@
 import Task from "@/dto/Task";
 import { getCurrentDateTime } from "@/utils/date";
 import { SQLiteDatabase } from "expo-sqlite";
+import uuid from 'react-native-uuid';
 
 export default class TaskRepository {
 
@@ -24,7 +25,7 @@ export default class TaskRepository {
 
         try {
             const result = await statement.executeAsync<{
-                id: number,
+                id: string,
                 task_list_id: number,
                 description: string,
                 updated_at: Date,
@@ -39,7 +40,6 @@ export default class TaskRepository {
 
                 const task = new Task(row.id, row.task_list_id, row.description, row.updated_at, row.deleted);
                 tasks.push(task);
-                console.log(row);
             }
 
         } finally {
@@ -63,7 +63,7 @@ export default class TaskRepository {
 
         try {
             const result = await statement.executeAsync<{
-                id: number,
+                id: string,
                 task_list_id: number,
                 task_list_title: string,
                 description: string,
@@ -86,7 +86,6 @@ export default class TaskRepository {
                     row.task_list_title
                 );
                 tasks.push(task);
-                console.log(row);
             }
 
         } finally {
@@ -100,15 +99,14 @@ export default class TaskRepository {
 
         const statement = await this.db.prepareAsync(
             `
-            INSERT OR IGNORE INTO task (description, task_list_id, updated_at) 
-            VALUES ($description, (SELECT id FROM task_list WHERE title = $taskListTitle), $currentTime)
+            INSERT OR IGNORE INTO task (id, description, task_list_id, updated_at) 
+            VALUES ($id, $description, (SELECT id FROM task_list WHERE title = $taskListTitle), $currentTime)
             `
         )
 
-        console.log("Task list tile", taskListTitle);
-
         try {
             await statement.executeAsync({
+                $id: uuid.v4(),
                 $description: description,
                 $taskListTitle: taskListTitle,
                 $currentTime: getCurrentDateTime()
@@ -120,7 +118,7 @@ export default class TaskRepository {
         }
     }
 
-    async remove(id: number) {
+    async remove(id: string) {
 
         const statement = await this.db.prepareAsync(
             `
@@ -141,9 +139,7 @@ export default class TaskRepository {
         }
     }
 
-    async update(id: number, description: string) {
-
-        console.log(new Date().toDateString());
+    async update(id: string, description: string) {
 
         const statement = await this.db.prepareAsync(
             `

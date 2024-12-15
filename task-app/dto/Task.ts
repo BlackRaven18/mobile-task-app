@@ -1,13 +1,13 @@
 
 export default class Task {
-    id: number;
+    id: string;
     task_list_id: number;
     task_list_title?: string;
     description: string;
     updated_at: Date;
     deleted: boolean;
 
-    constructor(id: number, task_list_id: number, description: string, updated_at: Date, deleted: boolean, task_list_title?: string) {
+    constructor(id: string, task_list_id: number, description: string, updated_at: Date, deleted: boolean, task_list_title?: string) {
         this.id = id;
         this.task_list_id = task_list_id;
         this.description = description;

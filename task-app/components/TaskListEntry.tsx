@@ -7,13 +7,12 @@ import TaskListRepository from "@/repository/TaskList";
 import { useSQLiteContext } from "expo-sqlite";
 
 type TaskListEntryProps = {
-    id: number,
+    id: string,
     title: string
     refresh: () => void
 }
 
 export default function TaskListEntry(props: TaskListEntryProps) {
-    const { username } = useAuth();
 
     const db = useSQLiteContext();
     const taskListRepository = new TaskListRepository(db);
@@ -40,7 +39,7 @@ export default function TaskListEntry(props: TaskListEntryProps) {
     }
 
     const renameTaskList = (newListName: string) => {
-        taskListRepository.update(props.title, newListName)
+        taskListRepository.update(props.id, newListName)
             .then(() => {
                 props.refresh();
                 hideRenameModal();

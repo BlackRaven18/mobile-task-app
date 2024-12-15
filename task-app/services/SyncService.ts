@@ -10,8 +10,8 @@ async function performSync(db: SQLiteDatabase, lastSync: string, username: strin
     console.log("Performing sync...");
     console.log("Last sync: ", lastSync);
 
-    await syncServerClient(taskListRepository, taskRepository, lastSync, username);
-    await syncClientServer(taskListRepository, taskRepository, lastSync, username);
+    // await syncServerClient(taskListRepository, taskRepository, lastSync, username);
+    // await syncClientServer(taskListRepository, taskRepository, lastSync, username);
 
     console.log("Sync complete.");
 }
