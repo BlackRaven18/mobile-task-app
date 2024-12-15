@@ -1,11 +1,9 @@
 import { AuthProvider } from "@/auth/AuthContext";
-import { useColorScheme } from '@/hooks/useColorScheme';
 import { Stack } from "expo-router";
 import { SQLiteProvider, type SQLiteDatabase } from 'expo-sqlite';
 import { PaperProvider } from "react-native-paper";
 
 export default function RootLayout() {
-    const colorScheme = useColorScheme();
 
     return (
         <SQLiteProvider databaseName="test.db" onInit={migrateDbIfNeeded}>

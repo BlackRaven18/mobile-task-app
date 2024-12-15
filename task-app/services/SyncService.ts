@@ -21,7 +21,6 @@ async function performSync(db: SQLiteDatabase, lastSync: string, username: strin
             await taskListRepository.remove(taskList.title);
             //TODO: think of deleting tasks as well
         } else {
-            console.log("INSERTED!!!", taskList);
             await taskListRepository.insert(taskList.title);
         }
     }
@@ -30,8 +29,6 @@ async function performSync(db: SQLiteDatabase, lastSync: string, username: strin
         if (task.deleted) {
             await taskRepository.remove(task.id);
         } else {
-            console.log("INSERTED!!!", task);
-            console.log("Title", task.updated_at);
             await taskRepository.insert(task.description, task.task_list_title ?? "");
         }
     }

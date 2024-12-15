@@ -5,19 +5,21 @@ import { performSync } from "@/services/SyncService";
 import { getCurrentDateTime } from "@/utils/date";
 import { Redirect, router, Stack } from "expo-router";
 import { openDatabaseSync } from "expo-sqlite";
-import React, { useEffect } from "react";
-import { Appbar } from "react-native-paper";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, Appbar, MD2Colors, MD3Colors } from "react-native-paper";
+import { View, Text } from "react-native";
 
 
 export default function AppLayout() {
   const { isSignedIn, username } = useAuth();
+  const [isSyncing, setIsSyncing] = useState(false);
 
   if (!isSignedIn) {
     return <Redirect href="/sign-in" />;
   }
 
   useEffect(() => {
-    syncData(username);
+     syncData(username);
   }, [])
 
   const syncData = (username: string) => {
@@ -33,9 +35,11 @@ export default function AppLayout() {
             const currentDateTime = getCurrentDateTime();
             // AsyncStorageService.storeData('lastSync', currentDateTime);
             console.log("Sync complete, updated lastSync to: ", currentDateTime);
+            setIsSyncing(false);
           })
       })
   }
+
 
   return (
     <>
@@ -45,12 +49,23 @@ export default function AppLayout() {
         <AppHeaderMenu />
       </Appbar.Header>
 
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="task-list-details" options={{ headerShown: false }} />
-        <Stack.Screen name="add-task" options={{ headerShown: false }} />
-        <Stack.Screen name="edit-task" options={{ headerShown: false }} />
-      </Stack>
+      {isSyncing ? (
+
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator animating={true} size={60} color={MD3Colors.primary50} style={{ marginBottom: 20 }} />
+          <Text style={{fontSize: 20}}>Synchronizing data...</Text>
+        </View>
+
+      ) : (
+
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="task-list-details" options={{ headerShown: false }} />
+          <Stack.Screen name="add-task" options={{ headerShown: false }} />
+          <Stack.Screen name="edit-task" options={{ headerShown: false }} />
+        </Stack>
+
+      )}
     </>
   )
 }
