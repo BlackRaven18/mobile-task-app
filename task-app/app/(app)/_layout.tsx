@@ -14,13 +14,11 @@ export default function AppLayout() {
   const { isSignedIn, username } = useAuth();
   const [isSyncing, setIsSyncing] = useState(false);
 
-  if (!isSignedIn) {
-    return <Redirect href="/sign-in" />;
-  }
-
   useEffect(() => {
-     syncData(username);
-  }, [])
+    if (isSignedIn) {
+      syncData(username);
+    }
+  }, [isSignedIn])
 
   const syncData = (username: string) => {
     const db = openDatabaseSync('test.db');
@@ -40,6 +38,9 @@ export default function AppLayout() {
       })
   }
 
+  if (!isSignedIn) {
+    return <Redirect href="/sign-in" />;
+  }
 
   return (
     <>
@@ -53,7 +54,7 @@ export default function AppLayout() {
 
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ActivityIndicator animating={true} size={60} color={MD3Colors.primary50} style={{ marginBottom: 20 }} />
-          <Text style={{fontSize: 20}}>Synchronizing data...</Text>
+          <Text style={{ fontSize: 20 }}>Synchronizing data...</Text>
         </View>
 
       ) : (
