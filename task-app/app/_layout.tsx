@@ -1,4 +1,5 @@
-import { AuthProvider } from "@/auth/AuthContext";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { SyncProvider } from "@/contexts/SyncContext";
 import { Stack } from "expo-router";
 import { SQLiteProvider, type SQLiteDatabase } from 'expo-sqlite';
 import { PaperProvider } from "react-native-paper";
@@ -8,12 +9,14 @@ export default function RootLayout() {
     return (
         <SQLiteProvider databaseName="test.db" onInit={migrateDbIfNeeded}>
             <AuthProvider>
-                <PaperProvider>
-                    <Stack screenOptions={{ headerShown: false, }}>
-                        <Stack.Screen name="sign-in" options={{ headerShown: true, headerTitle: 'Sign In' }} />
-                        <Stack.Screen name="sign-up" options={{ headerShown: true, headerTitle: 'Sign Up' }} />
-                    </Stack>
-                </PaperProvider>
+                <SyncProvider>
+                    <PaperProvider>
+                        <Stack screenOptions={{ headerShown: false, }}>
+                            <Stack.Screen name="sign-in" options={{ headerShown: true, headerTitle: 'Sign In' }} />
+                            <Stack.Screen name="sign-up" options={{ headerShown: true, headerTitle: 'Sign Up' }} />
+                        </Stack>
+                    </PaperProvider>
+                </SyncProvider>
             </AuthProvider>
         </SQLiteProvider>
     );

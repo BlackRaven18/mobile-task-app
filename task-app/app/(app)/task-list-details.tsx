@@ -1,5 +1,5 @@
 import HttpClient from "@/api/HttpClient";
-import { useAuth } from "@/auth/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import TaskCheckboxItem from "@/components/TaskCheckboxItem";
 import Task from "@/dto/Task";
 import { Link, useFocusEffect, useLocalSearchParams } from "expo-router";
@@ -8,6 +8,7 @@ import { FlatList, SafeAreaView, View } from "react-native";
 import { Divider, IconButton, MD3Colors, Portal, Snackbar, Text } from "react-native-paper";
 import TaskRepository from "@/repository/Task";
 import { useSQLiteContext } from "expo-sqlite";
+import { useSync } from "@/contexts/SyncContext";
 
 interface TaskListDetailsScreenParams {
     id: string
@@ -23,13 +24,12 @@ function EmptyTaskList() {
 }
 
 export default function TaskListDetailsScreen() {
-    const { username } = useAuth();
     const db = useSQLiteContext();
+    const { sync } = useSync();
 
-    const params: TaskListDetailsScreenParams = useLocalSearchParams();
+    const params: TaskListDetailsScreenParams = useLocalSearchParams<{ id: string, title: string }>();
 
     const taskRepository = new TaskRepository(db);
-    const httpClient = new HttpClient();
 
     const [tasks, setTasks] = useState<Task[]>([]);
     const [visible, setVisible] = useState(false);
@@ -47,18 +47,26 @@ export default function TaskListDetailsScreen() {
             })
     }
 
-    useEffect(() => {
-        getTasks();
-    }, [])
-
     useFocusEffect(
         useCallback(() => {
-            getTasks();
+            sync()
+                .then(() => {
+                    getTasks();
+                })
+                .catch((error) => {
+                    console.log(error);
+                })
         }, [])
     );
 
     const refresh = () => {
-        getTasks();
+        sync()
+            .then(() => {
+                getTasks();
+            })
+            .catch((error) => {
+                console.log(error);
+            })
     }
 
     const afterTaskDeleteCallback = (message: string) => {

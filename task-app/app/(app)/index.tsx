@@ -1,4 +1,4 @@
-import { useAuth } from "@/auth/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import AddTaskModal from "@/components/AddTaskListModal";
 import TaskListEntry from "@/components/TaskListEntry";
 import React, { useEffect, useState } from "react";
@@ -8,12 +8,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useSQLiteContext } from "expo-sqlite";
 import TaskList from "@/dto/TaskList";
 import TaskListRepository from "@/repository/TaskList";
+import { useSync } from "@/contexts/SyncContext";
 
 export default function Index() {
 	const db = useSQLiteContext();
 	const taskListRepository = new TaskListRepository(db);
 
-	const { username } = useAuth();
+	const { sync } = useSync();
 
 	const [taskLists, setTaskLists] = useState<TaskList[]>([]);
 
@@ -33,7 +34,13 @@ export default function Index() {
 	}, [])
 
 	const refresh = () => {
-		getTaskLists();
+		sync()
+		.then(() => {
+			getTaskLists();
+		})
+		.catch((error) => {
+			console.log(error);
+		});
 	}
 
 	return (

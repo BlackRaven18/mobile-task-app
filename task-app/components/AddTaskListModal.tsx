@@ -1,7 +1,7 @@
 import { Button, Divider, Modal, Portal, TextInput, Text } from "react-native-paper";
 import { Stack } from "react-native-flex-layout";
 import TaskListRepository from "@/repository/TaskList";
-import { useAuth } from "@/auth/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useSQLiteContext } from "expo-sqlite";

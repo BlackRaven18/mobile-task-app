@@ -1,39 +1,41 @@
-import { useAuth } from "@/auth/AuthContext";
 import AppHeaderMenu from "@/components/AppHeaderMenu";
-import * as AsyncStorageService from "@/services/AsyncStorageService";
-import { performSync } from "@/services/SyncService";
-import { getCurrentDateTime } from "@/utils/date";
+import { useAuth } from "@/contexts/AuthContext";
+import { useSync } from "@/contexts/SyncContext";
 import { Redirect, router, Stack } from "expo-router";
-import { openDatabaseSync } from "expo-sqlite";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Appbar, MD2Colors, MD3Colors } from "react-native-paper";
-import { View, Text } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Text, View, StyleSheet } from "react-native";
+import { ActivityIndicator, Appbar, MD3Colors, Portal } from "react-native-paper";
 
 
 export default function AppLayout() {
-  const { isSignedIn, username } = useAuth();
-  const [isSyncing, setIsSyncing] = useState(true);
+  const { isSignedIn } = useAuth();
+  const { isSyncing, sync } = useSync()
+  const [showBackdrop, setShowBackdrop] = useState(false);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isSyncing) {
+
+      timer = setTimeout(() => {
+        setShowBackdrop(true);
+      }, 300);
+    } else {
+
+      setShowBackdrop(false);
+    }
+
+    return () => clearTimeout(timer);
+  }, [isSyncing]);
 
   useEffect(() => {
     if (isSignedIn) {
-      syncData(username)
-      .then(() => setIsSyncing(false))
-      .catch(error => console.log(error))
+      sync()
+        .then(() => {
+          console.log("Sync complete");
+        })
+        .catch(error => console.log(error))
     }
   }, [isSignedIn])
-
-  const syncData = async (username: string) => {
-    const db = openDatabaseSync('test.db');
-
-    const lastSync =  await AsyncStorageService.getData('lastSync') ?? '1970-01-01 12:00:00';
-    await performSync(db, lastSync, username)
-
-    const currentDateTime = getCurrentDateTime();
-    await AsyncStorageService.storeData('lastSync', currentDateTime);
-    console.log("Sync complete, updated lastSync to: ", currentDateTime);
-
-  }
 
   if (!isSignedIn) {
     return <Redirect href="/sign-in" />;
@@ -47,27 +49,37 @@ export default function AppLayout() {
         <AppHeaderMenu />
       </Appbar.Header>
 
-      {isSyncing ? (
+      <Portal>
+        {showBackdrop && (
+          <View style={styles.backdrop}>
+            <ActivityIndicator animating={true} size={60} color={MD3Colors.primary50} style={{ marginBottom: 20 }} />
+            <Text style={{ fontSize: 20, color: 'white' }}>Synchronizing data...</Text>
+          </View>
+        )}
+      </Portal>
 
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator animating={true} size={60} color={MD3Colors.primary50} style={{ marginBottom: 20 }} />
-          <Text style={{ fontSize: 20 }}>Synchronizing data...</Text>
-        </View>
+      <Stack>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="task-list-details" options={{ headerShown: false }} />
+        <Stack.Screen name="add-task" options={{ headerShown: false }} />
+        <Stack.Screen name="edit-task" options={{ headerShown: false }} />
+      </Stack>
 
-      ) : (
-
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="task-list-details" options={{ headerShown: false }} />
-          <Stack.Screen name="add-task" options={{ headerShown: false }} />
-          <Stack.Screen name="edit-task" options={{ headerShown: false }} />
-        </Stack>
-
-      )}
     </>
   )
 }
 
-function useCallback(arg0: (username: string) => Promise<void>, arg1: never[]) {
-  throw new Error("Function not implemented.");
-}
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  backdrop: {
+    ...StyleSheet.absoluteFillObject, // Makes the view cover the entire screen
+    backgroundColor: 'rgba(0, 0, 0, 0.8)', // Semi-transparent black
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000, // Ensure it overlays other components
+  },
+});

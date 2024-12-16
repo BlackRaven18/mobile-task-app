@@ -1,5 +1,5 @@
 import HttpClient from '@/api/HttpClient';
-import { useAuth } from '@/auth/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import AuthService from '@/services/AuthService';

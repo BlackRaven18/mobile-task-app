@@ -1,4 +1,3 @@
-import { useAuth } from "@/auth/AuthContext";
 import { Link } from "expo-router";
 import { useState } from "react";
 import { Stack } from "react-native-flex-layout";
