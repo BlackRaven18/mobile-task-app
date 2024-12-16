@@ -7,7 +7,7 @@ import { useSQLiteContext } from "expo-sqlite";
 
 type AddTaskScreenProps = {
     listTitle: string,
-    listId: number
+    listId: string
 }
 
 export default function AddTaskScreen() {
@@ -27,7 +27,7 @@ export default function AddTaskScreen() {
             return;
         }
 
-        taskRepository.insert(taskDescription, params.listTitle)
+        taskRepository.insert(taskDescription, params.listId)
             .then(() => {
                 setMessage('Task added successfully');
                 router.back();

@@ -11,7 +11,7 @@ export default class TaskRepository {
         this.db = db
     }
 
-    async findAllByTaskListId(id: string): Promise<Task[]> {
+    async findByTaskListId(id: string): Promise<Task[]> {
 
         let tasks: Task[] = []
 
@@ -26,7 +26,7 @@ export default class TaskRepository {
         try {
             const result = await statement.executeAsync<{
                 id: string,
-                task_list_id: number,
+                task_list_id: string,
                 description: string,
                 updated_at: Date,
                 deleted: boolean
@@ -54,18 +54,16 @@ export default class TaskRepository {
 
         const statement = await this.db.prepareAsync(
             `
-            SELECT task.id, task.description, task.task_list_id, task.updated_at, task.deleted, task_list.title AS task_list_title 
-            FROM task, task_list 
-            WHERE task.task_list_id = task_list.id 
-            AND task.updated_at > $lastSync
+            SELECT task.id, task.description, task.task_list_id, task.updated_at, task.deleted
+            FROM task 
+            WHERE task.updated_at > $lastSync
             `
         )
 
         try {
             const result = await statement.executeAsync<{
                 id: string,
-                task_list_id: number,
-                task_list_title: string,
+                task_list_id: string,
                 description: string,
                 updated_at: Date,
                 deleted: boolean
@@ -83,7 +81,6 @@ export default class TaskRepository {
                     row.description,
                     row.updated_at,
                     row.deleted,
-                    row.task_list_title
                 );
                 tasks.push(task);
             }
@@ -95,20 +92,25 @@ export default class TaskRepository {
         return tasks;
     }
 
-    async insert(description: string, taskListTitle: string): Promise<void> {
+    async insert(description: string, taskListId: string, id?: string): Promise<void> {
 
         const statement = await this.db.prepareAsync(
             `
-            INSERT OR IGNORE INTO task (id, description, task_list_id, updated_at) 
-            VALUES ($id, $description, (SELECT id FROM task_list WHERE title = $taskListTitle), $currentTime)
+            INSERT INTO task (id, description, task_list_id, updated_at) 
+            VALUES ($id, $description, $taskListId, $currentTime)
+            ON CONFLICT (id) DO UPDATE 
+                SET description = EXCLUDED.description,
+                    updated_at = EXCLUDED.updated_at,
+                    deleted = EXCLUDED.deleted
+                WHERE excluded.id = task.id
             `
         )
 
         try {
             await statement.executeAsync({
-                $id: uuid.v4(),
+                $id: id ?? uuid.v4(),
                 $description: description,
-                $taskListTitle: taskListTitle,
+                $taskListId: taskListId,
                 $currentTime: getCurrentDateTime()
             })
 

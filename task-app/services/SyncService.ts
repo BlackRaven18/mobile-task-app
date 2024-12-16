@@ -10,8 +10,8 @@ async function performSync(db: SQLiteDatabase, lastSync: string, username: strin
     console.log("Performing sync...");
     console.log("Last sync: ", lastSync);
 
-    // await syncServerClient(taskListRepository, taskRepository, lastSync, username);
-    // await syncClientServer(taskListRepository, taskRepository, lastSync, username);
+    await syncServerClient(taskListRepository, taskRepository, lastSync, username);
+    await syncClientServer(taskListRepository, taskRepository, lastSync, username);
 
     console.log("Sync complete.");
 }
@@ -36,7 +36,7 @@ async function syncServerClient(
         if (taskList.deleted) {
             await taskListRepository.remove(taskList.title);
         } else {
-            await taskListRepository.insert(taskList.title);
+            await taskListRepository.insert(taskList.title, taskList.id);
         }
     }
 
@@ -44,7 +44,7 @@ async function syncServerClient(
         if (task.deleted) {
             await taskRepository.remove(task.id);
         } else {
-            await taskRepository.insert(task.description, task.task_list_title ?? "");
+            await taskRepository.insert(task.description, task.task_list_id, task.id);
         }
     }
 }

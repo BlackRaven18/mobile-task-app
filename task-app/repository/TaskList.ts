@@ -76,16 +76,22 @@ export default class TaskListRepository {
         return taskLists;
     }
 
-    async insert(taskListTitle: string) {
+    async insert(taskListTitle: string, id?: string) {
 
         const statement = await this.db.prepareAsync(
-            `INSERT OR IGNORE INTO task_list (id, title, updated_at) 
-            VALUES ($id, $title, $currentTime)`
+            `INSERT INTO task_list (id, title, updated_at) 
+            VALUES ($id, $title, $currentTime)
+            ON CONFLICT (id) DO UPDATE 
+                SET title = EXCLUDED.title,
+                    updated_at = EXCLUDED.updated_at,
+                    deleted = EXCLUDED.deleted
+                WHERE excluded.id = task_list.id
+            `
         )
 
         try {
             const result = await statement.executeAsync({
-                $id: uuid.v4(), 
+                $id: id ?? uuid.v4(), 
                 $title: taskListTitle, 
                 $currentTime: getCurrentDateTime() })
 

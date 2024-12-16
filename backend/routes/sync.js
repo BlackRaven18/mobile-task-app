@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../database');
+const { getCurrentDateTime } = require('../utils/date');
 
 router.get('/', async (req, res) => {
     const { lastSync, username } = req.query;
@@ -25,18 +26,16 @@ router.get('/', async (req, res) => {
     `;
 
     const getChangedTasksQuery = `
-        SELECT task.id, task.description, task.task_list_id, task.updated_at, task.deleted, task_list.title AS task_list_title FROM task, task_list 
-        WHERE task.task_list_id = task_list.id AND task.task_list_id
-        IN (
-            SELECT id 
-            FROM task_list 
-            WHERE user_id = (SELECT id FROM user WHERE username = ?)
-        ) AND task_list.updated_at > ? OR task_list.deleted = 1
+        SELECT task.id, task.description, task.task_list_id, task.updated_at, task.deleted 
+        FROM task
+        WHERE task.updated_at > ? 
+            AND task.task_list_id 
+            IN (SELECT id FROM task_list WHERE user_id = (SELECT id FROM user WHERE username = ?))
     `;
 
     try {
         changedTaskList = await fetchAll(db, getChangedTaskListsQuery, [username, lastSync]);
-        changedTasks = await fetchAll(db, getChangedTasksQuery, [username, lastSync]);
+        changedTasks = await fetchAll(db, getChangedTasksQuery, [lastSync, username]);
     } catch (err) {
         console.log(err);
     }
@@ -72,21 +71,30 @@ router.post('/', async (req, res) => {
         return;
     }
 
+    console.log(clientChanges);
+    console.log("time:", getCurrentDateTime());
+
     try {
 
         for (const taskList of clientChanges.taskLists) {
             if (taskList.deleted) {
                 await db.run(`
                     DELETE FROM task_list 
-                    WHERE task_list.title = ? 
+                    WHERE task_list.id = ? 
                     AND task_list.user_id = (SELECT id FROM user WHERE username = ?)`,
-                    [taskList.title, username]
+                    [taskList.id, username]
                 );
             } else {
                 await db.run(`
-                    INSERT OR IGNORE INTO task_list (title, user_id) 
-                    VALUES (?, (SELECT id FROM user WHERE username = ?))`,
-                    [taskList.title, username]
+                    INSERT INTO task_list (id, title, user_id) 
+                    VALUES (?, ?, (SELECT id FROM user WHERE username = ?))
+                    ON CONFLICT (id) DO UPDATE 
+                        SET title = EXCLUDED.title,
+                            updated_at = EXCLUDED.updated_at,
+                            deleted = EXCLUDED.deleted
+                        WHERE excluded.id = task_list.id
+                     `,
+                    [taskList.id, taskList.title, username]
                 );
             }
         }
@@ -95,19 +103,27 @@ router.post('/', async (req, res) => {
             if (task.deleted) {
                 await db.run(`
                     DELETE FROM task 
-                    WHERE task.id = ?`,
+                    WHERE task.id = ?
+                    `,
                     [task.id]
                 );
             } else {
                 await db.run(`
-                    INSERT OR IGNORE INTO task (description, task_list_id) 
-                    VALUES (?, (SELECT id FROM task_list WHERE title = ?))`,
-                    [task.description, task.task_list_title]
+                    INSERT INTO task (id, description, task_list_id) 
+                    VALUES (?, ?, ?)
+                    ON CONFLICT (id) DO UPDATE 
+                        SET description = EXCLUDED.description,
+                        updated_at = EXCLUDED.updated_at
+                        WHERE excluded.id = task.id
+                    `,
+                    [task.id, task.description, task.task_list_id]
                 );
             }
         }
     } catch (err) {
         console.log(err);
+        res.status(500).send("Sync failed");
+        return;
     }
 
     res.status(200).send("Sync successful");

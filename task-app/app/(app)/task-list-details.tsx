@@ -10,7 +10,7 @@ import TaskRepository from "@/repository/Task";
 import { useSQLiteContext } from "expo-sqlite";
 
 interface TaskListDetailsScreenParams {
-    id: number
+    id: string
     title: string
 }
 
@@ -37,7 +37,7 @@ export default function TaskListDetailsScreen() {
     const onToggleSnackBar = () => setVisible(!visible);
 
     const getTasks = () => {
-        taskRepository.findAllByTaskListId(params.id.toString())
+        taskRepository.findByTaskListId(params.id.toString())
             .then((tasks) => {
                 setTasks(tasks);
             })
