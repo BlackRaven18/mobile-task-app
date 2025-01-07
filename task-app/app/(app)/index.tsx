@@ -1,75 +1,77 @@
-import HttpClient from "@/api/HttpClient";
-import { useAuth } from "@/auth/AuthContext";
-import AddTaskModal from "@/components/AddTaskModal";
+import { useAuth } from "@/contexts/AuthContext";
+import AddTaskModal from "@/components/AddTaskListModal";
 import TaskListEntry from "@/components/TaskListEntry";
-import { Link } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { FlatList, View } from "react-native";
-import { Stack } from 'react-native-flex-layout';
-import { Dialog, Divider, IconButton, List, MD3Colors, Portal, Text, Button } from "react-native-paper";
+import { Divider, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-
+import { useSQLiteContext } from "expo-sqlite";
+import TaskList from "@/dto/TaskList";
+import TaskListRepository from "@/repository/TaskList";
+import { useSync } from "@/contexts/SyncContext";
 
 export default function Index() {
-  const { username } = useAuth();
+	const db = useSQLiteContext();
+	const taskListRepository = new TaskListRepository(db);
 
-  const httpClient = new HttpClient();
-  const [taskLists, setTaskLists] = useState<TaskList[]>([]);
-  const [visible, setVisible] = useState(false);
+	const { sync } = useSync();
 
-  const openDialog = () => setVisible(true);
-  const hideDialog = () => setVisible(false);
+	const [taskLists, setTaskLists] = useState<TaskList[]>([]);
 
+	const getTaskLists = () => {
 
-  const getTaskLists = () => {
-    httpClient.getAllTaskLists(username)
-      .then((taskLists) => {
-        setTaskLists(taskLists);
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-  }
+		taskListRepository.findAll()
+			.then((taskLists) => {
+				setTaskLists(taskLists);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	}
 
-  useEffect(() => {
-    getTaskLists();
-  }, [])
+	useEffect(() => {
+		getTaskLists();
+	}, [])
 
-  const refresh = () => {
-    getTaskLists();
-  }
+	const refresh = () => {
+		sync()
+		.then(() => {
+			getTaskLists();
+		})
+		.catch((error) => {
+			console.log(error);
+		});
+	}
 
+	return (
+		<View style={{ flex: 1 }}>
 
-  return (
-    <View style={{ flex: 1 }}>
+			<View style={{
+				flexDirection: 'row',
+				justifyContent: 'center',
+				alignContent: 'center',
+				marginTop: 15,
+				marginBottom: 10
+			}}
+			>
+				<Text style={{ fontSize: 24 }}> Twoje notatki</Text>
 
-      <View style={{
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignContent: 'center',
-        marginTop: 15,
-        marginBottom: 10
-      }}
-      >
-        <Text style={{ fontSize: 24 }}> Twoje notatki</Text>
+			</View>
 
-      </View>
+			<Divider style={{ marginHorizontal: 10 }} />
 
-      <Divider style={{ marginHorizontal: 10 }} />
+			<SafeAreaView style={{ flex: 1 }}>
+				<FlatList
+					data={taskLists}
+					renderItem={({ item }) => (
+						<TaskListEntry id={item.id} title={item.title} refresh={refresh} />
+					)}
+					keyExtractor={item => item.id.toString()}
+				/>
+			</SafeAreaView>
 
-      <SafeAreaView style={{ flex: 1 }}>
-        <FlatList
-          data={taskLists}
-          renderItem={({ item }) => (
-            <TaskListEntry id={item.id} title={item.title} refresh={refresh}/>
-          )}
-          keyExtractor={item => item.id.toString()}
-        />
-      </SafeAreaView>
+			<AddTaskModal refresh={refresh} />
 
-      <AddTaskModal refresh={refresh} />
-
-
-    </View >
-  );
+		</View >
+	);
 }

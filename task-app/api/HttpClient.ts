@@ -1,10 +1,12 @@
+import Task from "@/dto/Task";
+import TaskList from "@/dto/TaskList";
 import AuthService from "@/services/AuthService";
 import axios from "axios";
 import * as SecureStore from 'expo-secure-store';
 
 
 const api = axios.create({
-    baseURL: "http://192.168.1.7:3000",
+    baseURL: "http://192.168.1.2:3000",
     //baseURL: "http://localhost:3000",
 })
 
@@ -89,6 +91,37 @@ export default class HttpClient {
             });
     }
 
+    async getServerChanges(lastSync: string, username: string): Promise<{ taskLists: TaskList[], tasks: Task[] }> {
+        return api.get(`/sync`, { params: { lastSync, username } })
+            .then((response) => {
+                return response.data
+            })
+            .catch((error) => {
+                console.log(error);
+                return { taskLists: [], tasks: [] };
+            });
+    }
+
+    async postClientChanges(username: string, taskLists: TaskList[], tasks: Task[]): Promise<string> {
+
+        const body = { 
+            username: username,
+            clientChanges: {
+                taskLists: taskLists,
+                tasks: tasks
+            }
+        };
+
+        return api.post(`/sync`,  body )
+            .then((response) => {
+                return response.data
+            })
+            .catch((error) => {
+                console.log(error);
+                return "";
+            })
+    }
+
     async getAllTaskLists(username: string): Promise<TaskList[]> {
         return api.get(`/task-lists`, { params: { username } })
             .then((response) => {
@@ -123,7 +156,7 @@ export default class HttpClient {
     }
 
     async deleteTaskList(id: number, username: string): Promise<String> {
-        return api.delete(`/task-lists/${username}/${id}` )
+        return api.delete(`/task-lists/${username}/${id}`)
             .then((response) => {
                 return response.data
             })

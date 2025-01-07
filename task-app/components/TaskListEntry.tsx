@@ -1,19 +1,20 @@
-import { Link } from "expo-router"
-import { List, MD3Colors, IconButton, Portal, Button, Dialog, Text, Modal, Divider, TextInput } from "react-native-paper"
-import { Stack } from "react-native-flex-layout"
-import AddTaskModal from "./AddTaskModal"
+import { Link } from "expo-router";
 import { useState } from "react";
-import HttpClient from "@/api/HttpClient";
-import { useAuth } from "@/auth/AuthContext";
+import { Stack } from "react-native-flex-layout";
+import { Button, Dialog, Divider, IconButton, List, MD3Colors, Modal, Portal, Text, TextInput } from "react-native-paper";
+import TaskListRepository from "@/repository/TaskList";
+import { useSQLiteContext } from "expo-sqlite";
 
 type TaskListEntryProps = {
-    id: number,
+    id: string,
     title: string
     refresh: () => void
 }
 
 export default function TaskListEntry(props: TaskListEntryProps) {
-    const { username } = useAuth();
+
+    const db = useSQLiteContext();
+    const taskListRepository = new TaskListRepository(db);
 
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [showRenameModal, setShowRenameModal] = useState(false);
@@ -26,11 +27,10 @@ export default function TaskListEntry(props: TaskListEntryProps) {
     const hideRenameModal = () => setShowRenameModal(false);
 
     const deleteTaskList = () => {
-        new HttpClient().deleteTaskList(props.id, username)
-            .then((response) => {
+        taskListRepository.remove(props.title)
+            .then(() => {
                 props.refresh();
                 hideDeleteDialog();
-                console.log(response);
             })
             .catch((error) => {
                 console.log(error);
@@ -38,20 +38,18 @@ export default function TaskListEntry(props: TaskListEntryProps) {
     }
 
     const renameTaskList = (newListName: string) => {
-        new HttpClient().updateTaskList(props.id, newListName, username)
-            .then((response) => {
+        taskListRepository.update(props.id, newListName)
+            .then(() => {
                 props.refresh();
                 hideRenameModal();
-                console.log(response);
             })
             .catch((error) => {
                 console.log(error);
             })
     }
 
-
     return (
-        <Stack direction="row" style={{ flex: 1, padding: 5, margin: 5, borderColor: MD3Colors.primary50, backgroundColor: MD3Colors.primary80, borderWidth: 2, borderRadius: 10 }}>
+        <Stack direction="row" style={styles.containter}>
             <List.Icon color={MD3Colors.tertiary50} icon="note-edit" />
             <Link
                 href={{
@@ -126,4 +124,16 @@ export default function TaskListEntry(props: TaskListEntryProps) {
             </Portal>
         </Stack>
     )
+}
+
+const styles = {
+    containter: {
+        flex: 1,
+        padding: 5,
+        margin: 5,
+        borderColor: MD3Colors.primary50,
+        backgroundColor: MD3Colors.primary80,
+        borderWidth: 2,
+        borderRadius: 10
+    }
 }

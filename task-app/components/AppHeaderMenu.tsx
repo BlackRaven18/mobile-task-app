@@ -1,6 +1,7 @@
-import { useAuth } from "@/auth/AuthContext";
-import { router } from "expo-router";
+import React from "react";
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { router } from "expo-router";
 import { View } from "react-native";
 import { Menu, Appbar, Divider } from "react-native-paper";
 

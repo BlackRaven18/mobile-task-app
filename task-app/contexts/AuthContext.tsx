@@ -5,8 +5,8 @@ import { createContext, useState, useContext, PropsWithChildren } from "react";
 const AuthContext = createContext({
     username: "",
     isSignedIn: false,
-    signIn: () => {},
-    signOut: () => {},
+    signIn: () => { },
+    signOut: () => { },
 });
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {

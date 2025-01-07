@@ -1,31 +1,32 @@
 import { Button, Divider, Modal, Portal, TextInput, Text } from "react-native-paper";
 import { Stack } from "react-native-flex-layout";
-import HttpClient from "@/api/HttpClient";
-import { useAuth } from "@/auth/AuthContext";
-import { useState } from "react";
+import TaskListRepository from "@/repository/TaskList";
+import { useAuth } from "@/contexts/AuthContext";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
+import { useSQLiteContext } from "expo-sqlite";
 
 type AddTaskModalProps = {
     refresh: () => void
 }
 
 export default function AddTaskModal(props: AddTaskModalProps) {
-    const { username } = useAuth();
+
+    const db = useSQLiteContext();
+    const taskListRepository = new TaskListRepository(db);
 
     const [visible, setVisible] = useState(false);
     const [taskListTitle, setTaskListTitle] = useState('');
 
     const open = () => setVisible(true);
     const hide = () => setVisible(false);
-  
 
     const addTaskList = (title: string) => {
-        new HttpClient().addTaskList(title, username)
-            .then((response) => {
-            })
-            .catch((error) => {
-                console.log(error);
-            })
+        taskListRepository.insert(title)
+            .then(() => { props.refresh() })
+            .catch((error) => { console.log(error) })
+
+        setTaskListTitle('');
     }
 
     return (
@@ -45,7 +46,7 @@ export default function AddTaskModal(props: AddTaskModalProps) {
                         <TextInput
                             label="Title"
                             value={taskListTitle}
-                            onChangeText={(text) => setTaskListTitle(text)}
+                            onChangeText={(text) => setTaskListTitle(text.trim())}
                         />
 
                         <Button

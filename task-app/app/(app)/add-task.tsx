@@ -1,36 +1,41 @@
-import HttpClient from "@/api/HttpClient";
+import TaskRepository from "@/repository/Task";
 import { useState } from "react";
 import { View } from "react-native";
 import { Button, TextInput, Text } from "react-native-paper";
 import { router, useLocalSearchParams } from 'expo-router';
+import { useSQLiteContext } from "expo-sqlite";
 
 type AddTaskScreenProps = {
-    listId: number
+    listTitle: string,
+    listId: string
 }
 
 export default function AddTaskScreen() {
 
     const params: AddTaskScreenProps = useLocalSearchParams();
 
+    const db = useSQLiteContext();
+    const taskRepository = new TaskRepository(db);
+
     const [taskDescription, setTaskDescription] = useState('');
     const [message, setMessage] = useState('');
-    const httpClient = new HttpClient();
 
     const addNewTask = (taskDescription: string) => {
-        
+
         if (taskDescription === '') {
             setMessage('Task description cannot be empty');
             return;
         }
 
-        httpClient.addTask(params.listId, taskDescription)
-            .then((response) => {
-                console.log(response);
+        taskRepository.insert(taskDescription, params.listId)
+            .then(() => {
+                setMessage('Task added successfully');
                 router.back();
             })
             .catch((error) => {
                 console.log(error);
-            });
+                setMessage('Error adding task');
+            })
     }
 
     return (

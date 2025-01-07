@@ -1,14 +1,17 @@
 import HttpClient from "@/api/HttpClient";
-import { useAuth } from "@/auth/AuthContext";
-import { useFocusEffect, Link, useLocalSearchParams } from "expo-router";
-import { useState, useEffect, useCallback } from "react";
-import { View, SafeAreaView, FlatList } from "react-native";
-import { Divider, List, MD3Colors, IconButton, Portal, Snackbar, Text } from "react-native-paper";
-import { Stack } from 'react-native-flex-layout';
+import { useAuth } from "@/contexts/AuthContext";
 import TaskCheckboxItem from "@/components/TaskCheckboxItem";
+import Task from "@/dto/Task";
+import { Link, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
+import { FlatList, SafeAreaView, View } from "react-native";
+import { Divider, IconButton, MD3Colors, Portal, Snackbar, Text } from "react-native-paper";
+import TaskRepository from "@/repository/Task";
+import { useSQLiteContext } from "expo-sqlite";
+import { useSync } from "@/contexts/SyncContext";
 
 interface TaskListDetailsScreenParams {
-    id: number
+    id: string
     title: string
 }
 
@@ -21,20 +24,20 @@ function EmptyTaskList() {
 }
 
 export default function TaskListDetailsScreen() {
-    const { username } = useAuth();
+    const db = useSQLiteContext();
+    const { sync } = useSync();
 
-    const params: TaskListDetailsScreenParams = useLocalSearchParams();
+    const params: TaskListDetailsScreenParams = useLocalSearchParams<{ id: string, title: string }>();
 
-    const httpClient = new HttpClient();
+    const taskRepository = new TaskRepository(db);
+
     const [tasks, setTasks] = useState<Task[]>([]);
     const [visible, setVisible] = useState(false);
     const [message, setMessage] = useState('');
     const onToggleSnackBar = () => setVisible(!visible);
 
-
-
     const getTasks = () => {
-        httpClient.getTasks(params.id)
+        taskRepository.findByTaskListId(params.id.toString())
             .then((tasks) => {
                 setTasks(tasks);
             })
@@ -44,18 +47,26 @@ export default function TaskListDetailsScreen() {
             })
     }
 
-    useEffect(() => {
-        getTasks();
-    }, [])
-
     useFocusEffect(
         useCallback(() => {
-            getTasks();
+            sync()
+                .then(() => {
+                    getTasks();
+                })
+                .catch((error) => {
+                    console.log(error);
+                })
         }, [])
     );
 
     const refresh = () => {
-        getTasks();
+        sync()
+            .then(() => {
+                getTasks();
+            })
+            .catch((error) => {
+                console.log(error);
+            })
     }
 
     const afterTaskDeleteCallback = (message: string) => {
@@ -103,6 +114,7 @@ export default function TaskListDetailsScreen() {
                 <Link href={{
                     pathname: '/add-task',
                     params: {
+                        listTitle: params.title,
                         listId: params.id
                     }
                 }} asChild>

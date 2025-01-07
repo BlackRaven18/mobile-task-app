@@ -1,8 +1,9 @@
-import HttpClient from "@/api/HttpClient";
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
 import { Button, TextInput } from "react-native-paper";
+import TaskRepository from "@/repository/Task";
+import { useSQLiteContext } from "expo-sqlite";
 
 type EditTaskScreenParams = {
     id: string,
@@ -13,17 +14,17 @@ export default function EditTaskScreen() {
     const params: EditTaskScreenParams = useLocalSearchParams();
     const [description, setDescription] = useState(params.description);
 
-    const httpClient = new HttpClient();
+    const db = useSQLiteContext();
+    const taskRepository = new TaskRepository(db);
 
     const saveChanges = (description: string) => {
-        httpClient.updateTask(parseInt(params.id), description)
-        .then((response) => {
-            console.log(response);
-            router.back();
-        })
-        .catch((error) => {
-            console.log(error);
-        });
+        taskRepository.update(params.id, description)
+            .then(() => {
+                router.back();
+            })
+            .catch((error) => {
+                console.log(error);
+            })
     }
 
     return (
