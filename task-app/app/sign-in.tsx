@@ -3,86 +3,103 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import AuthService from '@/services/AuthService';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Stack } from 'react-native-flex-layout';
 import { Button, Divider, Text, TextInput } from 'react-native-paper';
+import { View } from 'react-native';
 
 export default function SignIn() {
-  const { signIn } = useAuth();
-  const httpClient = new HttpClient();
+	const { signIn } = useAuth();
+	const httpClient = new HttpClient();
 
-  const [login, setLogin] = useState('admin');
-  const [password, setPassword] = useState('admin');
-  const [hidePassword, setHidePassword] = useState(true);
-  const [message, setMessage] = useState('');
+	const [login, setLogin] = useState('');
+	const [password, setPassword] = useState('');
+	const [hidePassword, setHidePassword] = useState(true);
+	const [message, setMessage] = useState('');
 
-  const handleSignIn = () => {
-    httpClient.signIn(login, password)
-      .then((response) => {
-        const { accessToken, refreshToken } = response;
+	useEffect(() => {
+		setMessage('');
+	}, [])
 
-        Promise.all([
-          SecureStore.setItemAsync('accessToken', accessToken),
-          SecureStore.setItemAsync('refreshToken', refreshToken),
-        ])
-          .then(() => {
-            console.log('Sign in successful');
-            AuthService.decodeToken(accessToken);
-            signIn();
-          }).catch((error) => {
-            console.log(error);
-            setMessage("Invalid credentials");
-          })
+	const handleSignIn = () => {
+		httpClient.signIn(login, password)
+			.then((response) => {
+				const { accessToken, refreshToken } = response;
 
-      }).catch((error) => {
-        setMessage("Sign-in failed. Please try again.");
-      });
-  }
+				Promise.all([
+					SecureStore.setItemAsync('accessToken', accessToken),
+					SecureStore.setItemAsync('refreshToken', refreshToken),
+				])
+					.then(() => {
+						console.log('Logowanie udane');
+						AuthService.decodeToken(accessToken);
+						signIn();
+					}).catch((error) => {
+						console.log(error);
+						setMessage("Złe dane logowania");
+					})
 
-  return (
-    <Stack
-      direction='column'
-      spacing={10}
-      style={{ flex: 1, padding: 20, justifyContent: 'center' }}
-    >
-      <TextInput
-        label="Username"
-        value={login}
-        onChangeText={(text) => setLogin(text)}
-      />
-      <TextInput
-        secureTextEntry={hidePassword}
-        label="Password"
-        value={password}
-        onChangeText={(text) => setPassword(text)}
-        right={
-          <TextInput.Icon
-            icon={hidePassword ? 'eye-off' : 'eye'}
-            onPress={() => setHidePassword(!hidePassword)}
-          />
-        }
-      />
+			}).catch((error) => {
+				setMessage("Nieudane logowanie. Spróbuj ponownie.");
+			});
+	}
 
-      <Button
-        mode="contained"
-        onPress={handleSignIn}>
-        Sign In
-      </Button>
-      <Text style={{ color: 'red' }}>{message}</Text>
+	return (
+		<View
+			style={{
+				flex: 1,
+				padding: 20,
+				gap: 10,
+				justifyContent: 'center',
+				alignItems: 'center',
+			}}
+		>
+			<Text style={{ fontSize: 24 }}>
+				Zaloguj się
+			</Text>
 
-      <Divider style={{ margin: 20 }} />
+			<Divider style={{ width: '90%', marginBottom: 20 }} />
 
-      <Stack spacing={20} style={{ alignItems: 'center' }}>
-        <Text> You don't have account? No problem!</Text>
+			<View style={{ width: '100%', gap: 10 }}>
+				<TextInput
+					label="Login"
+					value={login}
+					onChangeText={(text) => setLogin(text)}
+				/>
+				<TextInput
+					secureTextEntry={hidePassword}
+					label="Hasło"
+					value={password}
+					onChangeText={(text) => setPassword(text)}
+					right={
+						<TextInput.Icon
+							icon={hidePassword ? 'eye-off' : 'eye'}
+							onPress={() => setHidePassword(!hidePassword)}
+						/>
+					}
+				/>
 
-        <Link href="/sign-up" asChild>
-          <Button
-            mode="contained"
-          >
-            Create Account
-          </Button>
-        </Link>
-      </Stack>
-    </Stack>
-  );
+				<Button
+					mode="contained"
+					onPress={handleSignIn}>
+					Zaloguj się
+				</Button>
+			</View>
+			<Text style={{ color: 'red' }}>{message}</Text>
+
+			<Divider style={{ margin: 15, width: '100%' }} />
+
+			<Stack spacing={20} style={{ alignItems: 'center' }}>
+				<Text> Nie masz konta? Nie ma problemu!</Text>
+
+				<Link href="/sign-up" asChild>
+					<Button
+						mode="contained"
+					>
+						Zarejestruj sie
+					</Button>
+				</Link>
+			</Stack>
+		</View>
+	);
 }

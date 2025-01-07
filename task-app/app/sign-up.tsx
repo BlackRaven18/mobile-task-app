@@ -1,8 +1,8 @@
 import HttpClient from '@/api/HttpClient';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Stack } from 'react-native-flex-layout';
-import { Button, Text, TextInput } from 'react-native-paper';
+import { View } from 'react-native';
+import { Button, Divider, Text, TextInput } from 'react-native-paper';
 
 
 export default function SignUp() {
@@ -13,68 +13,106 @@ export default function SignUp() {
     const [password, setPassword] = useState('');
     const [repeatedPassword, setRepeatedPassword] = useState('');
     const [hidePassword, setHidePassword] = useState(true);
+    const [error, setError] = useState('');
 
     const validatePassword = () => {
-        return password === repeatedPassword;
+
+        if (password.length === 0 || repeatedPassword.length === 0) {
+            setError('Hasło jest wymagane');
+            return false;
+        }
+
+        if (password.length < 6 || repeatedPassword.length < 6) {
+            setError('Hasło musi mieć conajmniej 6 znaków');
+            return false;
+        }
+
+        if (password !== repeatedPassword) {
+            setError('Hasła nie pasują do siebie');
+            return false;
+        }
+        
+        setError('');
+        return true;
+    }
+
+    const validateLogin = () => {
+
+        if (login.length < 3) {
+            setError('Login musi mieć minimum 3 znaki');
+            return false;
+        }
+
+        setError('');
+        return true;
     }
 
     const handleSignUp = () => {
 
-        if (!validatePassword()) {
-            alert('Passwords do not match');
+        if (!validateLogin()) {
             return;
         }
 
+        if (!validatePassword()) {
+            return;
+        }
+
+
         httpClient.signUp(login, password)
             .then((response) => {
+                console.log(response)
                 router.back()
             })
             .catch((error) => {
+                setError(error);
                 console.log(error);
             })
     }
 
     return (
-        <Stack spacing={10} style={{ flex: 1, padding: 20, justifyContent: 'center' }}>
-            <Text>
-                Create Account
-            </Text>
-            <TextInput
-                label="Login"
-                value={login}
-                onChangeText={text => setLogin(text)}
-            />
-            <TextInput
-                label="Password"
-                value={password}
-                onChangeText={text => setPassword(text)}
-                secureTextEntry={hidePassword}
-                right={
-                    <TextInput.Icon
-                        icon={hidePassword ? 'eye-off' : 'eye'}
-                        onPress={() => setHidePassword(!hidePassword)}
-                    />
-                }
-            />
-            <TextInput
-                label="Repeat Password"
-                value={repeatedPassword}
-                onChangeText={text => setRepeatedPassword(text)}
-                secureTextEntry={hidePassword}
-                right={
-                    <TextInput.Icon
-                        icon={hidePassword ? 'eye-off' : 'eye'}
-                        onPress={() => setHidePassword(!hidePassword)}
-                    />
-                }
-            />
+        <View style={{ flex: 1, gap: 10, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+            <Text style={{ fontSize: 24 }}>Rejestracja</Text>
+
+            <Divider style={{ width: '80%', marginBottom: 10 }} />
+
+            <View style={{ width: '90%', gap: 10 }}>
+                <TextInput
+                    label="Login"
+                    value={login}
+                    onChangeText={text => setLogin(text)}
+                />
+                <TextInput
+                    label="Hasło"
+                    value={password}
+                    onChangeText={text => setPassword(text)}
+                    secureTextEntry={hidePassword}
+                    right={
+                        <TextInput.Icon
+                            icon={hidePassword ? 'eye-off' : 'eye'}
+                            onPress={() => setHidePassword(!hidePassword)}
+                        />
+                    }
+                />
+                <TextInput
+                    label="Powtórz hasło"
+                    value={repeatedPassword}
+                    onChangeText={text => setRepeatedPassword(text)}
+                    secureTextEntry={hidePassword}
+                    right={
+                        <TextInput.Icon
+                            icon={hidePassword ? 'eye-off' : 'eye'}
+                            onPress={() => setHidePassword(!hidePassword)}
+                        />
+                    }
+                />
+            </View>
             <Button
-                mode='contained'
+                mode="contained"
                 onPress={handleSignUp}
             >
-                Register
+                Zarejestruj się
             </Button>
-
-        </Stack>
+            <Text style={{ color: 'red' }}>{error}</Text>
+        </View>
     )
 }

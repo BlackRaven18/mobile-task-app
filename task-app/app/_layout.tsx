@@ -12,8 +12,20 @@ export default function RootLayout() {
                 <SyncProvider>
                     <PaperProvider>
                         <Stack screenOptions={{ headerShown: false, }}>
-                            <Stack.Screen name="sign-in" options={{ headerShown: true, headerTitle: 'Sign In' }} />
-                            <Stack.Screen name="sign-up" options={{ headerShown: true, headerTitle: 'Sign Up' }} />
+                            <Stack.Screen
+                                name="sign-in"
+                                options={{
+                                    headerShown: true,
+                                    headerTitle: 'Logowanie'
+                                }}
+                            />
+                            <Stack.Screen
+                                name="sign-up"
+                                options={{
+                                    headerShown: true,
+                                    headerTitle: 'Rejestracja'
+                                }}
+                            />
                         </Stack>
                     </PaperProvider>
                 </SyncProvider>

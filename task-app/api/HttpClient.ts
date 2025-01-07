@@ -6,7 +6,7 @@ import * as SecureStore from 'expo-secure-store';
 
 
 const api = axios.create({
-    baseURL: "http://192.168.1.2:3000",
+    baseURL: "http://192.168.1.3:3000",
     //baseURL: "http://localhost:3000",
 })
 
@@ -87,7 +87,7 @@ export default class HttpClient {
                 return response.data
             })
             .catch((error) => {
-                return false;
+                throw error.response.data.error
             });
     }
 
