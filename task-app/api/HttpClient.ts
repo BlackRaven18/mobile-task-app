@@ -87,7 +87,7 @@ export default class HttpClient {
                 return response.data
             })
             .catch((error) => {
-                return false;
+                throw error.response.data.error
             });
     }
 

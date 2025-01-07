@@ -11,8 +11,8 @@ export default function SignIn() {
   const { signIn } = useAuth();
   const httpClient = new HttpClient();
 
-  const [login, setLogin] = useState('admin');
-  const [password, setPassword] = useState('admin');
+  const [login, setLogin] = useState('');
+  const [password, setPassword] = useState('');
   const [hidePassword, setHidePassword] = useState(true);
   const [message, setMessage] = useState('');
 
@@ -31,7 +31,7 @@ export default function SignIn() {
             signIn();
           }).catch((error) => {
             console.log(error);
-            setMessage("Invalid credentials");
+            setMessage("Złe dane logowania");
           })
 
       }).catch((error) => {

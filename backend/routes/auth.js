@@ -8,6 +8,19 @@ const jwt = require('jsonwebtoken');
 router.post('/register', async (req, res, next) => {
     try {
         const { username, password } = req.body;
+
+        if (!username || !password) {
+            return res.status(400).json({ error: 'Username and password are required' });
+        }
+
+        if (username.lenght < 3) {
+            return res.status(400).json({ error: 'Username must be at least 3 characters long' });
+        }
+
+        if (password.lenght < 6) {
+            return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = new User(username, hashedPassword);
         await user.save();
