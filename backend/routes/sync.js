@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const db = require('../database');
 const { getCurrentDateTime } = require('../utils/date');
+const { verifyToken } = require('../middleware/authMiddleware');
 
-router.get('/', async (req, res) => {
+router.get('/',verifyToken, async (req, res) => {
     const { lastSync, username } = req.query;
 
 
@@ -43,7 +44,7 @@ router.get('/', async (req, res) => {
     res.status(200).send({ taskLists: changedTaskList, tasks: changedTasks });
 })
 
-router.post('/', async (req, res) => {
+router.post('/',verifyToken, async (req, res) => {
     const { clientChanges, username } = req.body;
 
     if (!clientChanges) {
