@@ -49,6 +49,31 @@ export default class TaskRepository {
         return tasks;
     }
 
+    async removeByTaskListTitle(taskListTitle: string) {
+
+        const statement = await this.db.prepareAsync(
+            `
+            UPDATE task 
+            SET deleted = 1, 
+                updated_at = $currentTime 
+            WHERE task_list_id IN (
+                SELECT id 
+                FROM task_list 
+                WHERE title = $title
+            );
+            `
+        )
+
+        try {
+            await statement.executeAsync({
+                $currentTime: getCurrentDateTime(),
+                $title: taskListTitle
+            })
+        } finally {
+            await statement.finalizeAsync();
+        }
+    }
+
     async findByUpdatedAtAfter(lastSync: string): Promise<Task[]> {
         let tasks: Task[] = []
 
@@ -157,6 +182,20 @@ export default class TaskRepository {
                 $currentTime: getCurrentDateTime(),
                 $description: description
             })
+        } finally {
+            await statement.finalizeAsync();
+        }
+    }
+
+    async cleanUpDeleted() {
+
+        const statement = await this.db.prepareAsync(
+            `DELETE FROM task WHERE deleted = 1`
+        )
+
+        try {
+            await statement.executeAsync()
+
         } finally {
             await statement.finalizeAsync();
         }

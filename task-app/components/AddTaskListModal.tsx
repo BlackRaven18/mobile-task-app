@@ -11,7 +11,6 @@ type AddTaskModalProps = {
 }
 
 export default function AddTaskModal(props: AddTaskModalProps) {
-    const { username } = useAuth();
 
     const db = useSQLiteContext();
     const taskListRepository = new TaskListRepository(db);
@@ -23,7 +22,7 @@ export default function AddTaskModal(props: AddTaskModalProps) {
     const hide = () => setVisible(false);
 
     const addTaskList = (title: string) => {
-        taskListRepository.insert(title.trim())
+        taskListRepository.insert(title)
             .then(() => { props.refresh() })
             .catch((error) => { console.log(error) })
 
@@ -47,7 +46,7 @@ export default function AddTaskModal(props: AddTaskModalProps) {
                         <TextInput
                             label="Title"
                             value={taskListTitle}
-                            onChangeText={(text) => setTaskListTitle(text)}
+                            onChangeText={(text) => setTaskListTitle(text.trim())}
                         />
 
                         <Button

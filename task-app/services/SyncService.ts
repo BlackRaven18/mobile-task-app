@@ -12,6 +12,7 @@ async function performSync(db: SQLiteDatabase, lastSync: string, username: strin
 
     await syncServerClient(taskListRepository, taskRepository, lastSync, username);
     await syncClientServer(taskListRepository, taskRepository, lastSync, username);
+    await cleanAfterSync(taskListRepository, taskRepository);
 
     console.log("Sync complete.");
 }
@@ -67,3 +68,8 @@ async function syncClientServer(
 }
 
 export { performSync };
+
+async function cleanAfterSync(taskListRepository: TaskListRepository, taskRepository: TaskRepository) {
+    await taskRepository.cleanUpDeleted();
+    await taskListRepository.cleanUpDeleted();
+}

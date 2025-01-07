@@ -2,11 +2,15 @@ import TaskList from "@/dto/TaskList";
 import { SQLiteDatabase } from "expo-sqlite";
 import { getCurrentDateTime } from "@/utils/date";
 import uuid from 'react-native-uuid';
+import TaskRepository from "./Task";
 
 export default class TaskListRepository {
     private db: SQLiteDatabase
+    private taskRepository: TaskRepository
+
     public constructor(db: SQLiteDatabase) {
         this.db = db
+        this.taskRepository = new TaskRepository(db)
     }
 
     async findAll(): Promise<TaskList[]> {
@@ -111,11 +115,12 @@ export default class TaskListRepository {
             UPDATE task_list 
             SET deleted = 1, 
                 updated_at = $currentTime 
-            WHERE title = $title
+            WHERE title = $title;
             `
         )
 
         try {
+            await this.taskRepository.removeByTaskListTitle(taskListTitle);
             const result = await statement.executeAsync({ 
                 $currentTime: getCurrentDateTime(),
                 $title: taskListTitle,
@@ -125,7 +130,6 @@ export default class TaskListRepository {
             await statement.finalizeAsync();
         }
     }
-
 
     async update(id: string, newTitle: string) {
 
@@ -148,4 +152,17 @@ export default class TaskListRepository {
         }
     }
 
+    async cleanUpDeleted() {
+
+        const statement = await this.db.prepareAsync(
+            `DELETE FROM task_list WHERE deleted = 1`
+        )
+
+        try {
+            await statement.executeAsync()
+
+        } finally {
+            await statement.finalizeAsync();
+        }
+    }
 }
