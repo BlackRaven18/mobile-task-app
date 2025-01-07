@@ -2,7 +2,6 @@ import TaskListRepository from "@/repository/TaskList";
 import { useSQLiteContext } from "expo-sqlite";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
-import { Stack } from "react-native-flex-layout";
 import { Button, Divider, Modal, Portal, Text, TextInput } from "react-native-paper";
 
 type AddTaskModalProps = {
@@ -38,7 +37,7 @@ export default function AddTaskModal(props: AddTaskModalProps) {
             .catch((error) => { console.log(error) })
 
         setTaskListTitle('');
-        
+
         hide();
         props.refresh()
     }

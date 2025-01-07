@@ -28,7 +28,10 @@ export default function AppHeaderMenu() {
                     <Menu.Item 
                         leadingIcon="note-edit" 
                         title="Twoje notatki" 
-                        onPress={() => { router.navigate("/(app)") }}
+                        onPress={() => { 
+                            closeMenu();
+                            router.navigate("/(app)") 
+                        }}
                         />
                     <Divider />
                     <Menu.Item
