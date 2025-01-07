@@ -35,7 +35,10 @@ export default function EditTaskScreen() {
 
     return (
         <View
-            style={{ padding: 10, gap: 10 }}
+            style={{ 
+                padding: 10, 
+                gap: 10,
+            }}
         >
             <View style={{flexDirection: 'row'}}>
                 <TextInput

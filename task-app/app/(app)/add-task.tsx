@@ -28,23 +28,28 @@ export default function AddTaskScreen() {
     const addNewTask = (taskDescription: string) => {
 
         if (taskDescription === '') {
-            setMessage('Task description cannot be empty');
+            setMessage('Opis zadania nie może być pusty');
             return;
         }
 
         taskRepository.insert(taskDescription, params.listId)
             .then(() => {
-                setMessage('Task added successfully');
+                setMessage('Zadanie zostało dodane');
                 router.back();
             })
             .catch((error) => {
                 console.log(error);
-                setMessage('Error adding task');
+                setMessage('Nie udało się dodać zadania');
             })
     }
 
     return (
-        <View style={{ padding: 10, gap: 10 }}>
+        <View style={{
+            padding: 10,
+            gap: 10,
+            alignItems: 'center',
+        }}
+        >
             <View style={{ flexDirection: 'row' }}>
                 <TextInput
                     label="Opis zadania"
@@ -55,7 +60,11 @@ export default function AddTaskScreen() {
                 <AddContactDetailsModal addContactDetails={addContactDetails} />
             </View>
 
-            <Button mode="contained" onPress={() => addNewTask(taskDescription)}>
+            <Button
+                mode="contained"
+                onPress={() => addNewTask(taskDescription)}
+                style={{ width: '100%' }}
+            >
                 Dodaj zadanie
             </Button>
             <Text>

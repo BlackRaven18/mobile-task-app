@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { FlatList, View } from "react-native";
-import { Text, Modal, Portal, Divider, Button, IconButton } from "react-native-paper";
+import { Text, Modal, Portal, Divider, Button, IconButton, TextInput, Searchbar } from "react-native-paper";
 import * as Contacts from 'expo-contacts';
 
 type AddContactDetailsModalProps = {
@@ -12,6 +12,8 @@ export default function AddContactDetailsModal(props: AddContactDetailsModalProp
 
     const [visible, setVisible] = useState(false);
     const [contacts, setContacts] = useState<string[]>([]);
+    const [searchQuery, setSearchQuery] = useState(""); // Stan wyszukiwarki
+    const [filteredContacts, setFilteredContacts] = useState<string[]>([]);
 
     const openModal = async () => {
         const { status } = await Contacts.requestPermissionsAsync();
@@ -24,6 +26,7 @@ export default function AddContactDetailsModal(props: AddContactDetailsModalProp
             if (data.length > 0) {
                 const contacts = data.map((contact) => contact.firstName + ' ' + (contact.lastName ?? ''));
                 setContacts(contacts)
+                setFilteredContacts(contacts); // Ustawiamy początkową listę filtrowanych kontaktów
                 console.log(contacts);
             }
 
@@ -31,6 +34,17 @@ export default function AddContactDetailsModal(props: AddContactDetailsModalProp
         }
     }
     const hideModal = () => setVisible(false);
+
+    const handleSearch = (query: string) => {
+        setSearchQuery(query);
+
+        // Filtrujemy kontakty według wpisanego tekstu
+        const filtered = contacts.filter((contact) =>
+            contact.toLowerCase().includes(query.toLowerCase())
+        );
+
+        setFilteredContacts(filtered);
+    };
 
     return (
         <View>
@@ -57,17 +71,26 @@ export default function AddContactDetailsModal(props: AddContactDetailsModalProp
                         alignItems: 'center',
                     }}
                 >
+                    <View>
+                        
+                    </View>
                     <Text style={{ fontSize: 24, marginBottom: 15 }}> Kontakty</Text>
-                    <Divider />
+
+                    <Searchbar
+                        placeholder="Wyszukaj kontakt..."
+                        onChangeText={handleSearch}
+                        value={searchQuery}
+                        style={{ marginBottom: 10 }}
+                    />
 
                     <FlatList
-                        data={contacts}
+                        data={filteredContacts}
                         renderItem={({ item }) => (
 
                             <View >
                                 <Button
                                     mode="contained"
-                                    onPress={() => { 
+                                    onPress={() => {
                                         props.addContactDetails(item)
                                         hideModal()
                                     }}
