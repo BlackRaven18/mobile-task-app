@@ -34,7 +34,7 @@ export default function AppHeaderMenu() {
                     <Menu.Item
                         titleStyle={{ color: 'red' }}
                         leadingIcon="logout"
-                        title="Sign Out"
+                        title="Wyloguj się"
                         onPress={signOut}
                     />
                 </Menu>

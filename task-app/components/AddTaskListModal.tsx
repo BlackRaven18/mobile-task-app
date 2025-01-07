@@ -1,10 +1,9 @@
-import { Button, Divider, Modal, Portal, TextInput, Text } from "react-native-paper";
-import { Stack } from "react-native-flex-layout";
 import TaskListRepository from "@/repository/TaskList";
-import { useAuth } from "@/contexts/AuthContext";
-import { useEffect, useState } from "react";
-import { View } from "react-native";
 import { useSQLiteContext } from "expo-sqlite";
+import { useState } from "react";
+import { View } from "react-native";
+import { Stack } from "react-native-flex-layout";
+import { Button, Divider, Modal, Portal, Text, TextInput } from "react-native-paper";
 
 type AddTaskModalProps = {
     refresh: () => void
@@ -41,10 +40,10 @@ export default function AddTaskModal(props: AddTaskModalProps) {
                     }}
                 >
                     <Stack spacing={10}>
-                        <Text style={{ fontSize: 24 }}> Add New Task List</Text>
+                        <Text style={{ fontSize: 24 }}> Dodaj nową listę</Text>
                         <Divider />
                         <TextInput
-                            label="Title"
+                            label="Tytuł"
                             value={taskListTitle}
                             onChangeText={(text) => setTaskListTitle(text.trim())}
                         />
@@ -58,7 +57,7 @@ export default function AddTaskModal(props: AddTaskModalProps) {
                                 props.refresh()
                             }}
                         >
-                            Add
+                            Dodaj
                         </Button>
                     </Stack>
                 </Modal>
@@ -71,7 +70,7 @@ export default function AddTaskModal(props: AddTaskModalProps) {
                     icon={"note-plus"}
                     onPress={() => { open(); console.log('pressed') }}
                 >
-                    New List
+                    Nowa lista
                 </Button>
 
             </View>

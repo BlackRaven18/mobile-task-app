@@ -4,6 +4,7 @@ import { View } from "react-native";
 import { Button, TextInput } from "react-native-paper";
 import TaskRepository from "@/repository/Task";
 import { useSQLiteContext } from "expo-sqlite";
+import AddContactDetailsModal from "@/components/AddContactDetailsModal";
 
 type EditTaskScreenParams = {
     id: string,
@@ -12,6 +13,7 @@ type EditTaskScreenParams = {
 
 export default function EditTaskScreen() {
     const params: EditTaskScreenParams = useLocalSearchParams();
+
     const [description, setDescription] = useState(params.description);
 
     const db = useSQLiteContext();
@@ -27,21 +29,29 @@ export default function EditTaskScreen() {
             })
     }
 
+    const addContactDetails = (contactDetails: string) => {
+        setDescription(description + contactDetails);
+    }
+
     return (
         <View
-            style={{ padding: 10 }}
+            style={{ padding: 10, gap: 10 }}
         >
-            <TextInput
-                label="Task Description"
-                value={description}
-                onChangeText={text => setDescription(text)}
-            />
+            <View style={{flexDirection: 'row'}}>
+                <TextInput
+                    label="Opis zadania"
+                    value={description}
+                    onChangeText={text => setDescription(text)}
+                    style={{ flex: 1 }}
+                />
+                <AddContactDetailsModal addContactDetails={addContactDetails}/>
+            </View>
 
             <Button
                 mode="contained"
                 onPress={() => saveChanges(description)}
             >
-                Save
+                Zapisz zmiany
             </Button>
         </View>
     );

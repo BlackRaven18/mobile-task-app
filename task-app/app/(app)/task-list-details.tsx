@@ -18,7 +18,7 @@ interface TaskListDetailsScreenParams {
 function EmptyTaskList() {
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Lista jest pusta, dodaj pierwszy wpis!</Text>
+            <Text>Lista jest pusta, dodaj pierwsze zadanie!</Text>
         </View>
     )
 }

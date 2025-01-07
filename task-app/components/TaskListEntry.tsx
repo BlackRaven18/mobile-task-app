@@ -79,15 +79,15 @@ export default function TaskListEntry(props: TaskListEntryProps) {
 
             <Portal>
                 <Dialog visible={showDeleteDialog} onDismiss={hideDeleteDialog}>
-                    <Dialog.Title>Delete List?</Dialog.Title>
+                    <Dialog.Title>Usunąć listę?</Dialog.Title>
                     <Dialog.Content>
                         <Text variant="bodyMedium">
-                            Are you sure you want to delete "{props.title}" list?
+                            Czy jesteś pewny, że chcesz usunąć listę "{props.title}"?
                         </Text>
                     </Dialog.Content>
                     <Dialog.Actions>
-                        <Button onPress={deleteTaskList} >Yes</Button>
-                        <Button onPress={hideDeleteDialog} textColor="red">Cancel</Button>
+                        <Button onPress={deleteTaskList} >Tak</Button>
+                        <Button onPress={hideDeleteDialog} textColor="red">Anuluj</Button>
                     </Dialog.Actions>
                 </Dialog>
             </Portal>
@@ -102,10 +102,10 @@ export default function TaskListEntry(props: TaskListEntryProps) {
                     }}
                 >
                     <Stack spacing={10}>
-                        <Text style={{ fontSize: 24 }}> Rename Task List</Text>
+                        <Text style={{ fontSize: 24 }}> Zmień tytuł listy</Text>
                         <Divider />
                         <TextInput
-                            label="New Title"
+                            label="Nowy tytuł"
                             value={newListName}
                             onChangeText={(text) => setNewListName(text)}
                         />
@@ -117,7 +117,7 @@ export default function TaskListEntry(props: TaskListEntryProps) {
                                 renameTaskList(newListName);
                             }}
                         >
-                            Rename
+                            Zmień tytuł
                         </Button>
                     </Stack>
                 </Modal>

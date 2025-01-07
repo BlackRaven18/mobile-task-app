@@ -21,7 +21,7 @@ export default function TaskCheckboxItem(props: TaskCheckboxItemProps) {
     const removeTask = () => {
         taskRepository.remove(props.id)
             .then(() => {
-                props.afterDeleteCallback("Task removed successfully");
+                props.afterDeleteCallback("Zadanie usunięte");
             })
             .catch((error) => {
                 console.log(error);
