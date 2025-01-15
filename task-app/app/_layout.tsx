@@ -8,28 +8,28 @@ export default function RootLayout() {
 
     return (
         <SQLiteProvider databaseName="test.db" onInit={migrateDbIfNeeded}>
-            <AuthProvider>
-                <SyncProvider>
-                    <PaperProvider>
-                        <Stack screenOptions={{ headerShown: false, }}>
-                            <Stack.Screen
-                                name="sign-in"
-                                options={{
-                                    headerShown: true,
-                                    headerTitle: 'Logowanie'
-                                }}
-                            />
-                            <Stack.Screen
-                                name="sign-up"
-                                options={{
-                                    headerShown: true,
-                                    headerTitle: 'Rejestracja'
-                                }}
-                            />
-                        </Stack>
-                    </PaperProvider>
-                </SyncProvider>
-            </AuthProvider>
+                <AuthProvider>
+                    <SyncProvider>
+                        <PaperProvider>
+                            <Stack screenOptions={{ headerShown: false, }}>
+                                <Stack.Screen
+                                    name="sign-in"
+                                    options={{
+                                        headerShown: true,
+                                        headerTitle: 'Logowanie'
+                                    }}
+                                />
+                                <Stack.Screen
+                                    name="sign-up"
+                                    options={{
+                                        headerShown: true,
+                                        headerTitle: 'Rejestracja'
+                                    }}
+                                />
+                            </Stack>
+                        </PaperProvider>
+                    </SyncProvider>
+                </AuthProvider>
         </SQLiteProvider>
     );
 }
