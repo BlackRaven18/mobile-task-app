@@ -30,7 +30,7 @@ export default function Index() {
 	}
 
 	useEffect(() => {
-		getTaskLists();
+		refresh();
 	}, [])
 
 	const refresh = () => {
