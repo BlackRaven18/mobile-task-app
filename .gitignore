@@ -24,6 +24,3 @@ app-example/
 
 # Enviromental files
 .env
-
-# Database file
-*.db
