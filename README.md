@@ -103,3 +103,17 @@ The backend server ensures secure storage and processing of user data. Set up th
 5. Start the server:
    ```bash
    node --watch server.js
+   ```
+
+## Functionalities
+- **Task Synchronization**: Tasks are synced with the server, and updates are propagated bidirectionally.
+- **Error Handling**: Graceful handling of invalid input and server errors.
+- **Session Management**: Automatic renewal of access tokens, ensuring seamless user experience.
+
+## Screenshots
+| Login Screen | Task List | Add Task |
+|--------------|-----------|----------|
+| <img src="https://github.com/user-attachments/assets/7dcff886-7feb-485d-b98a-8a61de946a44" width="400"> | <img src="https://github.com/user-attachments/assets/083558a5-d735-4a3c-bd96-4cc3e61596cf" width="400"> | <img src="https://github.com/user-attachments/assets/1eccd5ab-4c9a-4c03-b8ca-582906446ba6" width="400"> |
+
+## Conclusion
+The Secure Task Management Application demonstrates the implementation of robust security features in a mobile application. However, challenges with HTTPS implementation and database encryption need to be addressed in future development phases. Despite these limitations, the project provides a strong foundation for secure task management.
