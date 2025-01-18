@@ -1,8 +1,8 @@
 
+import * as Contacts from 'expo-contacts';
 import { useState } from "react";
 import { FlatList, View } from "react-native";
-import { Text, Modal, Portal, Divider, Button, IconButton, TextInput, Searchbar } from "react-native-paper";
-import * as Contacts from 'expo-contacts';
+import { Button, IconButton, Modal, Portal, Searchbar, Text } from "react-native-paper";
 
 type AddContactDetailsModalProps = {
     addContactDetails: (contactDetails: string) => void
@@ -12,7 +12,7 @@ export default function AddContactDetailsModal(props: AddContactDetailsModalProp
 
     const [visible, setVisible] = useState(false);
     const [contacts, setContacts] = useState<string[]>([]);
-    const [searchQuery, setSearchQuery] = useState(""); // Stan wyszukiwarki
+    const [searchQuery, setSearchQuery] = useState("");
     const [filteredContacts, setFilteredContacts] = useState<string[]>([]);
 
     const openModal = async () => {
@@ -26,7 +26,7 @@ export default function AddContactDetailsModal(props: AddContactDetailsModalProp
             if (data.length > 0) {
                 const contacts = data.map((contact) => contact.firstName + ' ' + (contact.lastName ?? ''));
                 setContacts(contacts)
-                setFilteredContacts(contacts); // Ustawiamy początkową listę filtrowanych kontaktów
+                setFilteredContacts(contacts);
                 console.log(contacts);
             }
 
@@ -38,7 +38,6 @@ export default function AddContactDetailsModal(props: AddContactDetailsModalProp
     const handleSearch = (query: string) => {
         setSearchQuery(query);
 
-        // Filtrujemy kontakty według wpisanego tekstu
         const filtered = contacts.filter((contact) =>
             contact.toLowerCase().includes(query.toLowerCase())
         );
