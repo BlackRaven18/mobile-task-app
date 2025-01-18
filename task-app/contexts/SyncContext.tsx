@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, PropsWithChildren } from "react";
+import { createContext, useState, useContext, PropsWithChildren, useEffect } from "react";
 import { performSync } from "@/services/SyncService";
 import { openDatabaseSync } from "expo-sqlite";
 import * as AsyncStorageService from "@/services/AsyncStorageService";
@@ -15,6 +15,12 @@ export const SyncProvider = ({ children }: PropsWithChildren) => {
 
     const db = openDatabaseSync('test.db');
     const { username } = useAuth();
+
+    useEffect(() => {
+        AsyncStorageService.storeData('lastSync', '1970-01-01 12:00:00')
+            .then(() => console.log('lastSync set to 1970-01-01 12:00:00'))
+            .catch(error => console.log(error));
+    }, []);
 
     const sync = async () => {
         setIsSyncing(true);

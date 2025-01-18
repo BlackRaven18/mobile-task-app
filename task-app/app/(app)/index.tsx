@@ -30,7 +30,7 @@ export default function Index() {
 	}
 
 	useEffect(() => {
-		getTaskLists();
+		refresh();
 	}, [])
 
 	const refresh = () => {
@@ -54,7 +54,7 @@ export default function Index() {
 				marginBottom: 10
 			}}
 			>
-				<Text style={{ fontSize: 24 }}> Twoje notatki</Text>
+				<Text style={{ fontSize: 24 }}> Twoje listy zadań</Text>
 
 			</View>
 

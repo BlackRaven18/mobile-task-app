@@ -35,6 +35,7 @@ export default function SignIn() {
 						AuthService.decodeToken(accessToken);
 						signIn();
 					}).catch((error) => {
+						console.log(process.env.BACKEND_API_URL)
 						console.log(error);
 						setMessage("Złe dane logowania");
 					})

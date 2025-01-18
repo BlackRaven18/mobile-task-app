@@ -29,17 +29,24 @@ export default function TaskCheckboxItem(props: TaskCheckboxItemProps) {
     }
 
     return (
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={{ flexDirection: "row", alignItems: "center", flexWrap: "nowrap" }}>
             <Checkbox.Item
                 key={props.id}
                 label=""
                 status={checked}
                 onPress={() => setChecked(checked === "checked" ? "unchecked" : "checked")}
             />
-            <Text
-                style={{ textDecorationLine: checked === "checked" ? "line-through" : "none" }}>
-                {props.label}
-            </Text>
+            <View style={{ flex: 1, flexShrink: 1 }}>
+                <Text
+                    style={{
+                        textDecorationLine: checked === "checked" ? "line-through" : "none",
+                        flexWrap: "wrap",
+                    }}
+                    numberOfLines={0} // Zapewnia zawijanie w wielu liniach
+                >
+                    {props.label}
+                </Text>
+            </View>
             <View style={{ flexDirection: "row", marginLeft: "auto" }}>
                 <IconButton
                     icon="close-box"
@@ -50,7 +57,7 @@ export default function TaskCheckboxItem(props: TaskCheckboxItemProps) {
                 <Link
                     href={{
                         pathname: '/edit-task',
-                        params: { id: props.id, description: props.label }
+                        params: { id: props.id, description: props.label },
                     }}
                     asChild
                 >
@@ -62,7 +69,6 @@ export default function TaskCheckboxItem(props: TaskCheckboxItemProps) {
                     />
                 </Link>
             </View>
-
         </View>
     )
 }

@@ -76,10 +76,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   backdrop: {
-    ...StyleSheet.absoluteFillObject, // Makes the view cover the entire screen
-    backgroundColor: 'rgba(0, 0, 0, 0.8)', // Semi-transparent black
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)', 
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1000, // Ensure it overlays other components
+    zIndex: 1000,
   },
 });
